@@ -39,6 +39,37 @@ We use **trunk-based development**: `main` is the single trunk, and every change
 
 This is a Java application, so **Maven** is the build tool. `pom.xml` defines Spring Boot 3.1.2, Java 17, JUnit 5, Spring Boot Test, Testcontainers (MySQL), the JaCoCo plugin and the Sonar plugin. Maven runs the lifecycle in order: `clean` → `compile` → `test` → `package`.
 
+## 🏗️ Application Architecture
+
+The Ledger service is a Spring Boot REST API backed by MySQL. Each request passes through three layers, and each layer has one job.
+
+![Application architecture](docs/diagrams/app-architecture.svg)
+
+| Layer | Class | What it does |
+|---|---|---|
+| **Controller** | `BookController` | Receives HTTP calls such as `GET /books` and `POST /books`, and converts JSON to Java objects |
+| **Service** | `BookService` | Holds the business logic and validates input before anything is saved |
+| **Repository** | `BookRepository` | Spring Data JPA generates the SQL, so no queries are written by hand |
+| **Database** | MySQL 8 | Stores the `books` table in the `ledger` database |
+
+**Health probes.** Kubernetes uses two Actuator endpoints to decide what to do with a pod:
+- `/actuator/health/liveness` tells Kubernetes whether the process is still running. If it fails, the pod is restarted.
+- `/actuator/health/readiness` tells Kubernetes whether the app can take traffic yet, including the database connection. If it fails, the pod is removed from the load balancer but not restarted.
+
+---
+
+## 🛡️ Quality-Gate Funnel
+
+A build has to clear every gate in order. The first failure stops the pipeline, so code that breaks a gate never reaches dev.
+
+![Quality-gate funnel](docs/diagrams/quality-gate-funnel.svg)
+
+- **Gates 1–5 run in CI on every branch**, so feature branches get the same checks as `main`.
+- **Gate 5, the Quality Gate, is a pass/fail verdict from SonarQube.** It is the only gate that decides on rules about the code, not on tool output.
+- **Gates 6–7 run after the image is built.** The image is scanned in ECR, and only then does Argo CD deploy it to dev.
+
+---
+
 ## 🔁 The 7 CI Steps (Feature Branch and Main)
 
 Every CI run builds a new artifact, so the same steps run on the feature branch and again on `main`.
@@ -106,6 +137,15 @@ Every tool used in this pipeline, what it does here, and where it sits.
 ![Tool stack](docs/diagrams/tool-stack.svg)
 
 ## 🚀 CD: Deploy with Argo CD
+
+![GitOps with Argo CD](docs/diagrams/gitops-argocd.svg)
+
+**How Argo CD works, in plain words:**
+- **Git is the source of truth.** CI writes the new image tag into the GitOps repo. Nobody edits the cluster by hand.
+- **Argo CD compares the two.** It checks Git against each cluster and shows any drift.
+- **dev, qa and stage sync automatically.** A bad change is undone by reverting the commit in Git.
+- **prod is protected.** Auto-sync is off, so the sync only runs after an engineer approves it in Argo CD.
+
 
 - When the CI job succeeds, it **triggers the CD pipeline** for the environment the artifact is going to. The CI job starts the deployment with the `rel<run_number>` image tag.
 - **Argo CD** is a GitOps controller. It watches the Git repository that holds the Kubernetes manifests and makes the cluster match what is in Git.
