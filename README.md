@@ -13,7 +13,7 @@ We use **trunk-based development**: `main` is the single trunk, and every change
 - **Small, frequent merges.** Branches live for hours or a few days, not weeks, so merge conflicts stay small.
 - **Always releasable trunk.** `main` holds only code that has passed CI, so any commit can become a release.
 - **Fast feedback.** Each push runs the full CI pipeline, so bugs surface minutes after they are written.
-- **Build once, promote everywhere.** One image per commit moves through dev, qa, stage and prod. What QA tests is what ships.
+- **Promote code, not artifacts.** Only code moves to `main`. Each branch builds its own artifact: the feature build goes to dev, and the artifact built on `main` after the merge goes to qa, stage and prod.
 - **Simpler than long-lived branches.** No `develop` or release branches to keep in sync.
 
 ## 🔀 Branch Flow in This Repo
