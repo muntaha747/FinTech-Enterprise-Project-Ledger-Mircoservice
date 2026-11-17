@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" width="100%" role="img" aria-label="CI/CD trunk-based flow">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0b1020"/><stop offset="1" stop-color="#1b1442"/></linearGradient>
+<linearGradient id="title" x1="0" x2="1"><stop offset="0" stop-color="#ff6ec7"/><stop offset="0.5" stop-color="#f7b733"/><stop offset="1" stop-color="#00d2ff"/></linearGradient>
+<filter id="glow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="1200" height="520" rx="18" fill="url(#bg)"/>
+<text x="600" y="48" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="30" font-weight="800" fill="url(#title)">Ledger Microservice · CI/CD Trunk-Based Flow</text>
+<text x="600" y="76" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="14" fill="#c7d2fe">GitHub Actions (hybrid: hosted + self-hosted runners) → CI builds once · Argo CD deploys per environment</text>
+<text x="30" y="104" font-family="Segoe UI,Arial,sans-serif" font-size="13" font-weight="700" fill="#7dd3fc">FEATURE BRANCH · CI PIPELINE</text>
+<g filter="url(#glow)"><rect x="30" y="112" width="110" height="82" rx="14" fill="#11172e" stroke="#ff6ec7" stroke-width="2.5"><animate attributeName="stroke-opacity" values="0.35;1;0.35" dur="2.4s" begin="0.0s" repeatCount="indefinite"/></rect></g>
+<text x="85" y="148" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" font-weight="700" fill="#ff6ec7">Push</text>
+<text x="85" y="169" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#e2e8f0">Developer → feature</text>
+<text x="85" y="187" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#94a3b8">step 1</text>
+<g filter="url(#glow)"><rect x="161" y="112" width="110" height="82" rx="14" fill="#11172e" stroke="#f7b733" stroke-width="2.5"><animate attributeName="stroke-opacity" values="0.35;1;0.35" dur="2.4s" begin="0.3s" repeatCount="indefinite"/></rect></g>
+<text x="216" y="148" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" font-weight="700" fill="#f7b733">Build + Test</text>
+<text x="216" y="169" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#e2e8f0">mvn clean package</text>
+<text x="216" y="187" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#94a3b8">step 2</text>
+<g filter="url(#glow)"><rect x="292" y="112" width="110" height="82" rx="14" fill="#11172e" stroke="#00d2ff" stroke-width="2.5"><animate attributeName="stroke-opacity" values="0.35;1;0.35" dur="2.4s" begin="0.6s" repeatCount="indefinite"/></rect></g>
+<text x="347" y="148" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" font-weight="700" fill="#00d2ff">JaCoCo</text>
+<text x="347" y="169" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#e2e8f0">Code coverage</text>
+<text x="347" y="187" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#94a3b8">step 3</text>
+<g filter="url(#glow)"><rect x="423" y="112" width="110" height="82" rx="14" fill="#11172e" stroke="#7b2ff7" stroke-width="2.5"><animate attributeName="stroke-opacity" values="0.35;1;0.35" dur="2.4s" begin="0.9s" repeatCount="indefinite"/></rect></g>
+<text x="478" y="148" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" font-weight="700" fill="#7b2ff7">Trivy SCA</text>
+<text x="478" y="169" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#e2e8f0">Dependency CVEs</text>
+<text x="478" y="187" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#94a3b8">step 4</text>
+<g filter="url(#glow)"><rect x="554" y="112" width="110" height="82" rx="14" fill="#11172e" stroke="#00f5a0" stroke-width="2.5"><animate attributeName="stroke-opacity" values="0.35;1;0.35" dur="2.4s" begin="1.2s" repeatCount="indefinite"/></rect></g>
+<text x="609" y="148" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" font-weight="700" fill="#00f5a0">SonarQube</text>
+<text x="609" y="169" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#e2e8f0">SAST code scan</text>
+<text x="609" y="187" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#94a3b8">step 5</text>
+<g filter="url(#glow)"><rect x="685" y="112" width="110" height="82" rx="14" fill="#11172e" stroke="#ff4d4d" stroke-width="2.5"><animate attributeName="stroke-opacity" values="0.35;1;0.35" dur="2.4s" begin="1.5s" repeatCount="indefinite"/></rect></g>
+<text x="740" y="148" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" font-weight="700" fill="#ff4d4d">Quality Gate</text>
+<text x="740" y="169" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#e2e8f0">Pass / fail</text>
+<text x="740" y="187" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#94a3b8">step 6</text>
+<g filter="url(#glow)"><rect x="816" y="112" width="110" height="82" rx="14" fill="#11172e" stroke="#2dd4bf" stroke-width="2.5"><animate attributeName="stroke-opacity" values="0.35;1;0.35" dur="2.4s" begin="1.8s" repeatCount="indefinite"/></rect></g>
+<text x="871" y="148" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" font-weight="700" fill="#2dd4bf">Docker Build</text>
+<text x="871" y="169" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#e2e8f0">Image from JAR</text>
+<text x="871" y="187" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#94a3b8">step 7</text>
+<g filter="url(#glow)"><rect x="947" y="112" width="110" height="82" rx="14" fill="#11172e" stroke="#fb923c" stroke-width="2.5"><animate attributeName="stroke-opacity" values="0.35;1;0.35" dur="2.4s" begin="2.1s" repeatCount="indefinite"/></rect></g>
+<text x="1002" y="148" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" font-weight="700" fill="#fb923c">ECR Scan</text>
+<text x="1002" y="169" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#e2e8f0">Push + Clair scan</text>
+<text x="1002" y="187" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#94a3b8">step 8</text>
+<g filter="url(#glow)"><rect x="1078" y="112" width="110" height="82" rx="14" fill="#11172e" stroke="#60a5fa" stroke-width="2.5"><animate attributeName="stroke-opacity" values="0.35;1;0.35" dur="2.4s" begin="2.4s" repeatCount="indefinite"/></rect></g>
+<text x="1133" y="148" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" font-weight="700" fill="#60a5fa">ArgoCD Dev</text>
+<text x="1133" y="169" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#e2e8f0">QA functional</text>
+<text x="1133" y="187" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#94a3b8">step 9</text>
+<path d="M30,153 L1140,153" stroke="#334155" stroke-width="3" stroke-dasharray="6 6"/>
+<circle r="7" fill="#ffffff" filter="url(#glow)"><animateMotion dur="7s" repeatCount="indefinite" path="M30,153 L1140,153"/></circle>
+<path d="M1133,194 C1133,250 125,250 125,300" fill="none" stroke="#f7b733" stroke-width="2.5" stroke-dasharray="8 6"><animate attributeName="stroke-dashoffset" from="0" to="-28" dur="1.2s" repeatCount="indefinite"/></path>
+<text x="600" y="262" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="12" fill="#f7b733">CI job success → triggers CD pipeline (repo_dispatch / workflow_run)</text>
+<text x="30" y="290" font-family="Segoe UI,Arial,sans-serif" font-size="13" font-weight="700" fill="#86efac">MAIN BRANCH · CD PIPELINE → ENVIRONMENTS</text>
+<g filter="url(#glow)"><rect x="30" y="300" width="190" height="90" rx="16" fill="#11172e" stroke="#00f5a0" stroke-width="2.5"><animate attributeName="stroke-opacity" values="0.35;1;0.35" dur="2.8s" begin="0.0s" repeatCount="indefinite"/></rect></g>
+<text x="125" y="338" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="800" fill="#00f5a0">Merge to main</text>
+<text x="125" y="362" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" fill="#e2e8f0">Trunk, after QA OK</text>
+<text x="125" y="380" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#94a3b8">GitHub Actions</text>
+<path d="M224,345 L266,345" stroke="#f7b733" stroke-width="3"/><path d="M260,339 L268,345 L260,351" fill="none" stroke="#f7b733" stroke-width="3"/>
+<g filter="url(#glow)"><rect x="270" y="300" width="190" height="90" rx="16" fill="#11172e" stroke="#ff4d4d" stroke-width="2.5"><animate attributeName="stroke-opacity" values="0.35;1;0.35" dur="2.8s" begin="0.4s" repeatCount="indefinite"/></rect></g>
+<text x="365" y="338" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="800" fill="#ff4d4d">Repeat CI</text>
+<text x="365" y="362" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" fill="#e2e8f0">Same 7 steps, main</text>
+<text x="365" y="380" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#94a3b8">GitHub Actions</text>
+<path d="M464,345 L506,345" stroke="#00d2ff" stroke-width="3"/><path d="M500,339 L508,345 L500,351" fill="none" stroke="#00d2ff" stroke-width="3"/>
+<g filter="url(#glow)"><rect x="510" y="300" width="190" height="90" rx="16" fill="#11172e" stroke="#2dd4bf" stroke-width="2.5"><animate attributeName="stroke-opacity" values="0.35;1;0.35" dur="2.8s" begin="0.8s" repeatCount="indefinite"/></rect></g>
+<text x="605" y="338" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="800" fill="#2dd4bf">ArgoCD QA</text>
+<text x="605" y="362" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" fill="#e2e8f0">Regression tests</text>
+<text x="605" y="380" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#94a3b8">Argo CD · auto sync</text>
+<path d="M704,345 L746,345" stroke="#7b2ff7" stroke-width="3"/><path d="M740,339 L748,345 L740,351" fill="none" stroke="#7b2ff7" stroke-width="3"/>
+<g filter="url(#glow)"><rect x="750" y="300" width="190" height="90" rx="16" fill="#11172e" stroke="#fb923c" stroke-width="2.5"><animate attributeName="stroke-opacity" values="0.35;1;0.35" dur="2.8s" begin="1.2s" repeatCount="indefinite"/></rect></g>
+<text x="845" y="338" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="800" fill="#fb923c">ArgoCD Stage</text>
+<text x="845" y="362" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" fill="#e2e8f0">Perf &amp; load tests</text>
+<text x="845" y="380" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#94a3b8">Argo CD · auto sync</text>
+<path d="M944,345 L986,345" stroke="#00f5a0" stroke-width="3"/><path d="M980,339 L988,345 L980,351" fill="none" stroke="#00f5a0" stroke-width="3"/>
+<g filter="url(#glow)"><rect x="990" y="300" width="190" height="90" rx="16" fill="#11172e" stroke="#ff4d4d" stroke-width="2.5"><animate attributeName="stroke-opacity" values="0.35;1;0.35" dur="2.8s" begin="1.6s" repeatCount="indefinite"/></rect></g>
+<text x="1085" y="338" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" font-weight="800" fill="#ff4d4d">Prod · MANUAL</text>
+<text x="1085" y="362" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" fill="#e2e8f0">Human approval</text>
+<text x="1085" y="380" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="10" fill="#94a3b8">Argo CD · manual sync</text>
+<path d="M30,345 L1170,345" stroke="#334155" stroke-width="2" stroke-dasharray="4 8" opacity="0"/>
+<circle r="7" fill="#86efac" filter="url(#glow)"><animateMotion dur="6s" repeatCount="indefinite" path="M30,345 L1170,345"/></circle>
+<text x="600" y="430" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="13" fill="#e2e8f0">QA functional ✔ → merge · Regression (QA) ✔ → Performance/load (Stage) ✔ → Prod sync needs human approval</text>
+<text x="600" y="470" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="11" fill="#94a3b8">Artifact built once per commit → same image promoted through dev → qa → stage → prod</text>
+</svg>
