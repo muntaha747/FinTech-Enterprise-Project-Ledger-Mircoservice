@@ -13,17 +13,17 @@ on:
      ECRURL:
       description: "ECR Registry URL"
       required: true
-      default: "081654307023.dkr.ecr.ap-south-1.amazonaws.com"
+      default: "747240980649.dkr.ecr.us-east-1.amazonaws.com"
 
      APPREPO:
       description: "Docker Repo Name"
       required: true
-      default: "wezvatechledger"
+      default: "fintech-ledgerservice"
 
      REGION:
       description: "AWS Region"
       required: true
-      default: "ap-south-1"  
+      default: "us-east-1"  
 
 jobs:
   build-and-scan:
@@ -127,7 +127,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ inputs.REGION || 'ap-south-1' }}
+          aws-region: ${{ inputs.REGION || 'us-east-1' }}
 
       # -----------------------------
       # Login to Amazon ECR
@@ -141,8 +141,8 @@ jobs:
       # ----------------------------- 
       - name: Build and Push Docker Image
         env:
-          ECR_REGISTRY: ${{ inputs.ECRURL || '081654307023.dkr.ecr.ap-south-1.amazonaws.com' }}
-          REPOSITORY: ${{ inputs.APPREPO || 'wezvatechledger' }}
+          ECR_REGISTRY: ${{ inputs.ECRURL || '747240980649.dkr.ecr.us-east-1.amazonaws.com' }}
+          REPOSITORY: ${{ inputs.APPREPO || 'fintech-ledgerservice' }}
           IMAGE_TAG: rel${{ github.run_number }}
         run: |
           echo "Building Docker Image..."
@@ -157,7 +157,7 @@ jobs:
         run: |
           for i in {1..12}; do
             STATUS=$(aws ecr describe-image-scan-findings \
-              --repository-name ${{ inputs.APPREPO || 'wezvatechledger' }} \
+              --repository-name ${{ inputs.APPREPO || 'fintech-ledgerservice' }} \
               --image-id imageTag=rel${{ github.run_number }} \
               --query 'imageScanStatus.status' \
               --output text 2>/dev/null || echo "NOT_FOUND")
@@ -187,13 +187,13 @@ jobs:
         id: scan
         run: |
           CRITICAL=$(aws ecr describe-image-scan-findings \
-            --repository-name ${{ inputs.APPREPO || 'wezvatechledger' }} \
+            --repository-name ${{ inputs.APPREPO || 'fintech-ledgerservice' }} \
             --image-id imageTag=rel${{ github.run_number }} \
             --query 'imageScanFindings.findingSeverityCounts.CRITICAL' \
             --output text 2>/dev/null || echo 0)
 
           HIGH=$(aws ecr describe-image-scan-findings \
-            --repository-name ${{ inputs.APPREPO || 'wezvatechledger' }} \
+            --repository-name ${{ inputs.APPREPO || 'fintech-ledgerservice' }} \
             --image-id imageTag=rel${{ github.run_number }} \
             --query 'imageScanFindings.findingSeverityCounts.HIGH' \
             --output text 2>/dev/null || echo 0)
