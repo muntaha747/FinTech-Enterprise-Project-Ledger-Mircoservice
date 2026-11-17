@@ -124,9 +124,6 @@ Every tool used in this pipeline, what it does here, and where it sits.
 
 The original run instructions are kept below.
 
-# Spring Boot + MySQL example - WEZVA TECHNOLOGIES | ADAM | 9739110917
-# Sample commit - 04
-
 ## Technologies used:
 * Spring Boot 3.1.2
 * MySQL 8
@@ -151,7 +148,7 @@ $ docker exec -it mydb mysql -uroot -ppassword
   mysql> select * from books;
 
 # Deploy the application
-$ nohup java -jar target/wezvatech-springboot-mysql-9739110917.jar 2>&1 &
+$ nohup java -jar target/*.jar 2>&1 &
 
 # Check if its up & running
 $ curl -s http://localhost:8080/books
@@ -163,6 +160,4 @@ $ curl -X POST -H "Content-Type: application/json" -d '{"title":"Book A", "price
 $ curl -s http://localhost:8080/actuator/health/liveness
 $ curl -s http://localhost:8080/actuator/health/readiness
 
-# dummy commit Apr/12
-#test
 ```
