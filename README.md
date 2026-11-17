@@ -44,28 +44,38 @@ This is a Java application, so **Maven** is the build tool. `pom.xml` defines Sp
 Every CI run builds a new artifact, so the same steps run on the feature branch and again on `main`.
 
 ### Step 1 · Build the artifact (Maven: clean, unit test, package)
+
+![Step 1 · Build the artifact (Maven: clean, unit test, package)](docs/diagrams/step1-build-test.svg)
 - **`mvn clean package`** removes old output, compiles the code, runs the **unit tests** and packages the Spring Boot JAR.
 - **Unit tests** use **JUnit 5** and Spring Boot Test. Controller tests such as `BookControllerTest` run without a real database.
 - Tests run in the Maven `test` phase, **before** `package`. A failing test stops the pipeline, so no broken JAR is built.
 - The JAR is renamed to `backend_rel<run_number>.jar` so each build is traceable.
 
 ### Step 2 · Code coverage (JaCoCo)
+
+![Step 2 · Code coverage (JaCoCo)](docs/diagrams/step2-jacoco.svg)
 - **JaCoCo** is a Maven plugin that measures how much of the code the unit tests exercise (line, branch and method coverage).
 - It writes an HTML and XML report to `target/site/jacoco`. The report is uploaded as a build artifact and passed to SonarQube.
 - Coverage alone doesn't prove the tests are useful, but a low number shows code that is never tested.
 
 ### Step 3 · Software Composition Analysis (Trivy SCA)
+
+![Step 3 · Software Composition Analysis (Trivy SCA)](docs/diagrams/step3-trivy-sca.svg)
 - **SCA** checks the open-source libraries in the project (Spring, Jackson, MySQL driver and so on) for **known CVEs**.
 - **Trivy** scans the project filesystem and `pom.xml` and writes a JSON report, which is uploaded as an artifact.
 - This catches a vulnerable dependency before it gets into an image.
 
 ### Step 4 · Static Application Security Testing (SonarQube)
+
+![Step 4 · Static Application Security Testing (SonarQube)](docs/diagrams/step4-sonarqube-sast.svg)
 - **SAST** reads the source code without running it and reports bugs, security vulnerabilities, security hotspots and code smells.
 - SonarQube receives the JaCoCo report, so coverage and quality are reviewed together.
 - The project key and branch name are sent with each run, so feature and main results are reported separately.
 - *Note:* the current workflow sends results to **SonarCloud**, the hosted SonarQube service.
 
 ### Step 5 · Quality Gate
+
+![Step 5 · Quality Gate](docs/diagrams/step5-quality-gate.svg)
 - The **quality gate** is a set of pass/fail rules applied to the SonarQube analysis, for example:
   - coverage on new code at least **80%**
   - no new **blocker or critical** issues
@@ -74,16 +84,26 @@ Every CI run builds a new artifact, so the same steps run on the feature branch 
 - *Note:* the current workflow still has `continue-on-error` on the Sonar and image-scan steps. Those should be removed so the gates block the pipeline.
 
 ### Step 6 · Container image (Docker)
+
+![Step 6 · Container image (Docker)](docs/diagrams/step6-docker-image.svg)
 - The `Dockerfile` builds from **`eclipse-temurin:17` JRE on Alpine**: a small, Java 17 runtime image.
 - The app runs as a **non-root user** (`wezvatech`), not root.
 - `startup.sh` writes the environment's configuration file and starts `java -jar app.jar`.
 - The image is tagged **`rel<run_number>`**, so each image maps to one CI run.
 
 ### Step 7 · Image push and scan (Amazon ECR)
+
+![Step 7 · Image push and scan (Amazon ECR)](docs/diagrams/step7-ecr-scan.svg)
 - The image is pushed to **Amazon ECR** (Elastic Container Registry).
 - **ECR scanning** checks the image's operating-system and application packages for vulnerabilities. Basic scanning is based on **Clair**, an open-source vulnerability scanner.
 - The pipeline reads the findings (`describe-image-scan-findings`) and counts CRITICAL and HIGH issues. Those counts are the input to the security gate.
 - Enable **scan-on-push** on the repository so every image is checked automatically.
+
+## 🧰 Tool Stack
+
+Every tool used in this pipeline, what it does here, and where it sits.
+
+![Tool stack](docs/diagrams/tool-stack.svg)
 
 ## 🚀 CD: Deploy with Argo CD
 
