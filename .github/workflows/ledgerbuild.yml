@@ -3,20 +3,19 @@ name: ledger build and scan
 on:
   push:
     branches:
-      - main
+      - feature
   pull_request:
     branches:
-      - main
-  
+      - main  
   workflow_dispatch:
    inputs:
      ECRURL:
       description: "ECR Registry URL"
       required: true
-      default: "747240980649.dkr.ecr.us-east-1.amazonaws.com"
+      default: "747240980649.dkr.ecr.us-east-1.amazonaws.com/fintech-ledgerservice"
 
      APPREPO:
-      description: "Docker Repo Name"
+      description: "Elastic Container Registry Name"
       required: true
       default: "fintech-ledgerservice"
 
@@ -24,7 +23,6 @@ on:
       description: "AWS Region"
       required: true
       default: "us-east-1"  
-
 jobs:
   build-and-scan:
     runs-on: ubuntu-latest
