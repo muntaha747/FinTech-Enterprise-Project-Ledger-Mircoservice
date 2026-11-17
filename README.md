@@ -87,7 +87,7 @@ Every CI run builds a new artifact, so the same steps run on the feature branch 
 
 ![Step 6 · Container image (Docker)](docs/diagrams/step6-docker-image.svg)
 - The `Dockerfile` builds from **`eclipse-temurin:17` JRE on Alpine**: a small, Java 17 runtime image.
-- The app runs as a **non-root user** (`wezvatech`), not root.
+- The app runs as a **non-root user** (`appuser`), not root.
 - `startup.sh` writes the environment's configuration file and starts `java -jar app.jar`.
 - The image is tagged **`rel<run_number>`**, so each image maps to one CI run.
 
@@ -138,12 +138,12 @@ The original run instructions are kept below.
 $ mvn clean package -Dmaven.test.skip=true
 
 # Run MySQL backend container for testing
-$ docker run --name mydb -p 3306:3306 -e MYSQL_USER=wezvatech -e MYSQL_PASSWORD=password -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=mywezvadb -d mysql:8.1
+$ docker run --name mydb -p 3306:3306 -e MYSQL_USER=ledger -e MYSQL_PASSWORD=password -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=ledgerdb -d mysql:8.1
 
 # Check if mysql is working fine
 $ docker exec -it mydb mysql -uroot -ppassword
   mysql> show databases;
-  mysql> use mywezvadb;
+  mysql> use ledgerdb;
   mysql> show tables;
   mysql> select * from books;
 
