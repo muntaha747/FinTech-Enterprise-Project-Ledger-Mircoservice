@@ -1,11 +1,14 @@
 name: ledger ci build
 
-# feature push      -> no run (feature changes go through a PR)
+# push to feature   -> build fb<N>  -> CD: functional
 # pull request      -> build fb<N>  -> CD: functional
 # PR merged to main -> build rel<N> -> CD: regression + integration (only after a successful PR)
 # manual run        -> build from the chosen branch -> CD: the TEST_ENV you pick
 
 on:
+  push:
+    branches:
+      - feature
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
