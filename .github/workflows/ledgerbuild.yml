@@ -1,13 +1,13 @@
-name: ledger build and scan
+name: ledger build and scan on feature and main branch
 
 on:
   push:
     branches:
       - main
+      - feature
   pull_request:
     branches:
-      - main
-  
+      - main  
   workflow_dispatch:
    inputs:
      ECRURL:
@@ -16,7 +16,7 @@ on:
       default: "747240980649.dkr.ecr.us-east-1.amazonaws.com"
 
      APPREPO:
-      description: "Docker Repo Name"
+      description: "Elastic Container Registry Name"
       required: true
       default: "fintech-ledgerservice"
 
@@ -24,7 +24,8 @@ on:
       description: "AWS Region"
       required: true
       default: "us-east-1"  
-
+env:
+    TAG_PREFIX: ${{ github.ref == 'refs/heads/main' && 'rel' || 'fb' }}
 jobs:
   build-and-scan:
     runs-on: ubuntu-latest
@@ -143,7 +144,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ inputs.ECRURL || '747240980649.dkr.ecr.us-east-1.amazonaws.com' }}
           REPOSITORY: ${{ inputs.APPREPO || 'fintech-ledgerservice' }}
-          IMAGE_TAG: rel${{ github.run_number }}
+          IMAGE_TAG:  ${{ env.TAG_PREFIX }}${{ github.run_number }}
         run: |
           echo "Building Docker Image..."
           docker build -t $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG .
@@ -158,7 +159,7 @@ jobs:
           for i in {1..12}; do
             STATUS=$(aws ecr describe-image-scan-findings \
               --repository-name ${{ inputs.APPREPO || 'fintech-ledgerservice' }} \
-              --image-id imageTag=rel${{ github.run_number }} \
+              --image-id imageTag=${{ env.TAG_PREFIX }}${{ github.run_number }} \
               --query 'imageScanStatus.status' \
               --output text 2>/dev/null || echo "NOT_FOUND")
 
@@ -188,13 +189,13 @@ jobs:
         run: |
           CRITICAL=$(aws ecr describe-image-scan-findings \
             --repository-name ${{ inputs.APPREPO || 'fintech-ledgerservice' }} \
-            --image-id imageTag=rel${{ github.run_number }} \
+            --image-id imageTag=${{ env.TAG_PREFIX }}${{ github.run_number }} \
             --query 'imageScanFindings.findingSeverityCounts.CRITICAL' \
             --output text 2>/dev/null || echo 0)
 
           HIGH=$(aws ecr describe-image-scan-findings \
             --repository-name ${{ inputs.APPREPO || 'fintech-ledgerservice' }} \
-            --image-id imageTag=rel${{ github.run_number }} \
+            --image-id imageTag=${{ env.TAG_PREFIX }}${{ github.run_number }} \
             --query 'imageScanFindings.findingSeverityCounts.HIGH' \
             --output text 2>/dev/null || echo 0)
 

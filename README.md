@@ -201,3 +201,160 @@ $ curl -s http://localhost:8080/actuator/health/liveness
 $ curl -s http://localhost:8080/actuator/health/readiness
 
 ```
+
+---
+
+## 📚 Class Notes: Git, Build, DevSecOps and CI (Ledger build repo)
+
+This section holds the class notes that apply to this build repo. Pushing to `feature` or `main` runs `.github/workflows/ledgerbuild.yml`.
+
+### Git basics
+
+```bash
+git config --global user.name "<your name>"
+git config --global user.email "<your email>"
+git config --global push.default simple
+
+git clone <remote-repo> <local-repo>
+git status
+git add .
+git commit -m "message"
+git diff <file>
+git log --oneline -2
+git push
+git pull                    # fetch metadata and update the workspace
+
+git branch                  # local branches
+git branch -a               # local and remote branches
+git checkout <branch>
+git merge <source>          # merge <source> into the current branch
+git cherry-pick <commit-id>
+```
+
+**Branches in this repo**
+
+| Branch | CI runs on | Image tag produced |
+|---|---|---|
+| `feature` | push | `fb<run_number>` |
+| `main` | push and pull request | `rel<run_number>` |
+
+Add `[skip ci]` to a commit message when the change does not need a pipeline run, such as a README update. GitHub Actions skips the run for that push.
+
+### Development lifecycle
+
+- **DevOps lifecycle:** Develop → Test → Release
+- **Feature branch:** developer writes code and unit tests, CI builds, the image goes to QA, and QA runs functional tests.
+- **Main branch:** merge the feature branch into `main`, CI builds, the image goes to QA for integration and regression tests, then to Stage for UAT, then to Prod for release.
+
+### Testing types
+
+- **Unit test:** run by developers on the files they changed, before they commit.
+- **Functional test:** QA checks the new or changed functionality across the whole app.
+- **Integration test:** QA checks that each new or changed piece works with the rest of the system.
+- **Regression test:** QA checks that new functionality works with existing functionality.
+- **UAT:** QA or Ops check end-to-end behaviour in an environment similar to production.
+- **Performance test:** load testing.
+
+### Java build
+
+A Java build has three steps: **compile → unit test → package (.jar)**. Java compiles source files into bytecode, which the JVM runs. A Docker image step follows the package step.
+
+```bash
+sudo apt update
+sudo apt install -y git openjdk-17-jdk maven
+java --version
+mvn --version
+
+git clone https://github.com/muntaha747/FinTech-Enterprise-Project-Ledger-Mircoservice-CI-Build-Pipeline.git
+cd FinTech-Enterprise-Project-Ledger-Mircoservice-CI-Build-Pipeline
+git checkout feature
+mvn clean package -Dmaven.test.skip=true     # build the jar without tests
+
+mvn verify -Ddependency-check.skip=true      # tests + JaCoCo coverage (used in CI)
+```
+
+What `ledgerbuild.yml` does, step by step:
+
+1. Checkout the repo with full history (`fetch-depth: 0`).
+2. Set up Temurin Java 17.
+3. Build the Spring Boot jar with Maven.
+4. Run `mvn verify` and upload the JaCoCo coverage report.
+5. Run Trivy against the filesystem (dependency scan, SCA).
+6. Run the SonarCloud SAST scan and quality gate (main branch only).
+7. Log in to ECR and build and push `fintech-ledgerservice:rel<N>` or `fb<N>`.
+8. Wait for the ECR image scan to finish and read the Critical and High counts.
+9. Enforce the security gate. In this repo the gate is non-blocking (`continue-on-error: true`), so vulnerabilities are reported and the pipeline still passes.
+10. On `main`, trigger the CD repo's `deploy.yml` with the new tag.
+
+### Build once, deploy many
+
+Build the image once and promote the same image through every environment. The CI builds the image; the CD repo changes only the tag each environment uses.
+
+- `feature` build → `fb<N>` image → QA (functional).
+- `main` build → `rel<N>` image → QA (integration and regression) → Stage (UAT) → Prod (release).
+
+### DevSecOps: shift left
+
+Find and fix vulnerabilities early, in the feature branch, not after release. The 4 Cs of security are **Cloud, Compute, Container, Code**.
+
+| Check | Tool in this repo |
+|---|---|
+| SCA (dependency and filesystem scan) | Trivy (`aquasec/trivy:0.50.0`) |
+| SAST (static code analysis) and quality gate | SonarCloud (`wezva-fintech_ledger-build`) |
+| Container image scan | ECR scan on push |
+| Coverage | JaCoCo |
+
+Quality profiles from class:
+
+- **Feature branch:** about 70–80% coverage, about 5% duplication, no Critical vulnerabilities, grade B.
+- **Main branch:** about 90% coverage, no Critical or High vulnerabilities, grade A.
+
+### SonarCloud setup
+
+1. Sign in to sonarcloud.io with your GitHub account.
+2. Make the GitHub repo public, or use a plan that allows private scanning.
+3. Add the repo as a SonarCloud project.
+4. Turn off automatic analysis (Administration → Analysis method). The pipeline runs the scan.
+5. Create a token (My Account → Security) and save it as the GitHub secret `sonarcloud`.
+
+### GitHub secrets this repo needs
+
+| Secret | Used for |
+|---|---|
+| `sonarcloud` | SonarCloud scan |
+| `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` | Log in to ECR and push the image |
+| `GH_PAT` | Trigger the CD repo's `deploy.yml` on `main` |
+
+Never commit credentials to files. Keep them in GitHub secrets.
+
+### GitHub Actions concepts
+
+- **Where:** a runner. This repo uses a GitHub-hosted runner (`ubuntu-latest`). A self-hosted runner in your AWS account would need an IAM role with ECR access attached.
+- **When:** the `on:` block (`push`, `pull_request`, `workflow_dispatch`).
+- **What:** `jobs` run on a runner, and each job has `steps`.
+
+### Docker
+
+- An **image** is `Repository:Tag`. Here: `747240980649.dkr.ecr.us-east-1.amazonaws.com/fintech-ledgerservice:rel<N>`. The default tag is `latest`.
+- A **Dockerfile** lists the instructions for building an image.
+- Layers in this app: OS → framework (JRE 17) → application (jar) → scripts. Configuration (properties, secrets, certificates) is injected at runtime, not baked into the image.
+
+| Instruction | Purpose |
+|---|---|
+| `FROM` | Base image |
+| `RUN` | Run a command while building the image |
+| `USER` | Default user |
+| `WORKDIR` | Default working directory |
+| `COPY` | Copy files from the build context into the image |
+| `EXPOSE` | Document the port (8080 for the Ledger service) |
+| `CMD` | Default command; a command given at `docker run` replaces it |
+| `ENTRYPOINT` | Always runs; a command given at `docker run` is passed as arguments |
+
+A multi-stage Dockerfile builds in one stage (full JDK and Maven) and copies only the jar into a smaller runtime stage. This keeps the image small.
+
+### Responsibilities
+
+- Containerize the microservice.
+- Set up the build pipeline and the security checks.
+- Keep the Sonar, AWS and GH_PAT secrets in GitHub.
+- Hand the image tag over to the CD repo.

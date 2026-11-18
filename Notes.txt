@@ -1,0 +1,133 @@
+LEDGER MICROSERVICE - BUILD REPO NOTES
+======================================
+
+1. GIT BASICS
+-------------
+git config --global user.name "<your name>"
+git config --global user.email "<your email>"
+git config --global push.default simple
+
+git clone <remote-repo> <local-repo>
+git status
+git add .
+git commit -m "message"
+git diff <file>
+git log --oneline -2
+git push
+git pull                      # fetch and update the workspace
+
+git branch                    # local branches
+git branch -a                 # local and remote branches
+git checkout <branch>
+git merge <source>            # merge <source> into the current branch
+git cherry-pick <commit-id>
+
+Add [skip ci] to the commit message for changes that do not need a build (docs only).
+
+
+2. BRANCHES AND CI
+------------------
+feature : push runs ledgerbuild.yml, image tag fb<run_number>
+main    : push and pull request run ledgerbuild.yml, image tag rel<run_number>
+main build also triggers the CD repo deploy.yml (uses GH_PAT)
+
+
+3. JAVA BUILD (LOCAL)
+---------------------
+sudo apt update
+sudo apt install -y git openjdk-17-jdk maven
+java --version
+mvn --version
+
+git clone https://github.com/muntaha747/FinTech-Enterprise-Project-Ledger-Mircoservice-CI-Build-Pipeline.git
+cd FinTech-Enterprise-Project-Ledger-Mircoservice-CI-Build-Pipeline
+git checkout feature
+mvn clean package -Dmaven.test.skip=true     # build the jar, no tests
+mvn verify -Ddependency-check.skip=true      # tests + JaCoCo coverage (as in CI)
+
+Build steps: compile -> unit test -> package (.jar) -> Docker image.
+
+
+4. WHAT THE CI PIPELINE DOES (ledgerbuild.yml)
+----------------------------------------------
+1. Checkout repo (full history)
+2. Set up Temurin Java 17
+3. mvn clean package (build the jar)
+4. mvn verify (tests + JaCoCo), upload coverage report
+5. Trivy filesystem scan (SCA)
+6. SonarCloud SAST scan + quality gate (main branch only)
+7. Configure AWS credentials, log in to ECR
+8. docker build and docker push  747240980649.dkr.ecr.us-east-1.amazonaws.com/fintech-ledgerservice:<tag>
+9. Wait for the ECR image scan, read Critical and High counts
+10. Security gate (currently non-blocking)
+11. main only: trigger the CD repo deploy workflow with the new tag
+
+
+5. QUALITY PROFILES
+-------------------
+Feature : about 70-80% coverage, about 5% duplication, no Critical vulnerabilities, grade B
+Main    : about 90% coverage, no Critical or High vulnerabilities, grade A
+
+
+6. SONARCLOUD SETUP
+-------------------
+1. Sign in at sonarcloud.io with your GitHub account.
+2. Make the GitHub repo public (or use a plan that allows private scanning).
+3. Add the repo as a SonarCloud project (project key: wezva-fintech_ledger-build).
+4. Turn off automatic analysis: Administration > Analysis method.
+5. Create a token: My Account > Security. Save it as the GitHub secret "sonarcloud".
+
+
+7. GITHUB SECRETS REQUIRED
+--------------------------
+sonarcloud              SonarCloud token
+AWS_ACCESS_KEY_ID       ECR push and login
+AWS_SECRET_ACCESS_KEY   ECR push and login
+GH_PAT                  personal access token used to trigger the CD repo
+
+Never put credentials in files. Keep them in GitHub secrets only.
+
+
+8. DOCKER COMMANDS
+------------------
+docker build -t <image>:<tag> .
+docker images
+docker run --rm -it <image>:<tag>
+docker logs <container-id>
+
+Image = Repository:Tag. Default tag is "latest".
+
+Dockerfile instructions:
+  FROM        base image
+  RUN         command run while building the image
+  USER        default user
+  WORKDIR     default working directory
+  COPY        copy files into the image
+  EXPOSE      port (8080 for the Ledger service)
+  CMD         default command, overridden by a command given at docker run
+  ENTRYPOINT  always runs, command given at docker run becomes arguments
+
+
+9. ECR COMMANDS
+---------------
+aws ecr describe-images --region us-east-1 --repository-name fintech-ledgerservice \
+  --query 'sort_by(imageDetails,&imagePushedAt)[].[imagePushedAt,imageTags[0]]' --output text
+
+aws ecr describe-image-scan-findings --repository-name fintech-ledgerservice --image-id imageTag=<tag>
+
+
+10. BUILD ONCE, DEPLOY MANY
+---------------------------
+Build the image once. feature -> fb<N> -> QA functional tests.
+main -> rel<N> -> QA integration/regression -> Stage UAT -> Prod release.
+The CD repo changes only the image tag per environment.
+
+
+11. TESTING TYPES
+-----------------
+Unit        developer, on changed files, before commit
+Functional  QA, new functionality across the app
+Integration QA, new pieces work with the rest of the system
+Regression  QA, new functionality works with existing functionality
+UAT         QA/Ops, end-to-end in a production-like environment
+Performance load testing
