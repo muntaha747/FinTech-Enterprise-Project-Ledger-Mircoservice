@@ -1,6 +1,6 @@
 name: ledger ci build
 
-# feature push      -> build fb<N>  -> CD: regression
+# feature push      -> build fb<N>  -> CD: functional + regression
 # pull request      -> build fb<N>  -> CD: functional
 # push to main      -> build rel<N> -> CD: regression + integration
 # manual run        -> build from the chosen branch -> CD: the TEST_ENV you pick
@@ -84,7 +84,7 @@ jobs:
           elif [ "$REF_NAME" = "main" ]; then
             TAG="rel$RUN_NO"; ENVS="regression integration"
           else
-            TAG="fb$RUN_NO"; ENVS="regression"
+            TAG="fb$RUN_NO"; ENVS="functional regression"
           fi
 
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
