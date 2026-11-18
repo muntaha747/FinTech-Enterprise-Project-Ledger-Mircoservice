@@ -3,6 +3,7 @@ name: ledger ci build
 # feature push      -> build fb<N>  -> CD: regression
 # pull request      -> build fb<N>  -> CD: functional
 # push to main      -> build rel<N> -> CD: regression + integration
+# manual run        -> build from the chosen branch -> CD: the TEST_ENV you pick
 
 on:
   push:
@@ -12,11 +13,35 @@ on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+    inputs:
+      ECRURL:
+        description: "ECR Registry URL"
+        required: true
+        default: "747240980649.dkr.ecr.us-east-1.amazonaws.com"
+
+      APPREPO:
+        description: "Elastic Container Registry Name"
+        required: true
+        default: "fintech-ledgerservice"
+
+      REGION:
+        description: "AWS Region"
+        required: true
+        default: "us-east-1"
+
+      TEST_ENV:
+        description: "Environment to deploy to after the build"
+        required: true
+        type: choice
+        default: "regression"
+        options:
+          - functional
+          - regression
+          - integration
+          - regression-and-integration
 
 env:
-  AWS_REGION: us-east-1
-  ECR_REGISTRY: 747240980649.dkr.ecr.us-east-1.amazonaws.com
-  ECR_REPO: fintech-ledgerservice
   CD_REPO: muntaha747/FinTech-Enterprise-Project-Ledger-Mircoservice-Deployment-Pipeline
 
 jobs:
@@ -29,19 +54,42 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Decide image tag and test environments
+      - name: Decide image tag, registry and test environments
         id: plan
+        env:
+          EVENT: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          RUN_NO: ${{ github.run_number }}
+          TEST_CHOICE: ${{ inputs.TEST_ENV }}
+          IN_REGISTRY: ${{ inputs.ECRURL }}
+          IN_REPO: ${{ inputs.APPREPO }}
+          IN_REGION: ${{ inputs.REGION }}
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            echo "tag=fb${{ github.run_number }}" >> "$GITHUB_OUTPUT"
-            echo "envs=functional" >> "$GITHUB_OUTPUT"
-          elif [ "${{ github.ref_name }}" = "main" ]; then
-            echo "tag=rel${{ github.run_number }}" >> "$GITHUB_OUTPUT"
-            echo "envs=regression integration" >> "$GITHUB_OUTPUT"
+          # registry, repo and region: from the manual inputs, or the defaults for push and PR runs
+          echo "registry=${IN_REGISTRY:-747240980649.dkr.ecr.us-east-1.amazonaws.com}" >> "$GITHUB_OUTPUT"
+          echo "repo=${IN_REPO:-fintech-ledgerservice}" >> "$GITHUB_OUTPUT"
+          echo "region=${IN_REGION:-us-east-1}" >> "$GITHUB_OUTPUT"
+
+          if [ "$EVENT" = "pull_request" ]; then
+            TAG="fb$RUN_NO"; ENVS="functional"
+          elif [ "$EVENT" = "workflow_dispatch" ]; then
+            if [ "$REF_NAME" = "main" ]; then TAG="rel$RUN_NO"; else TAG="fb$RUN_NO"; fi
+            case "$TEST_CHOICE" in
+              functional)                ENVS="functional" ;;
+              regression)                ENVS="regression" ;;
+              integration)               ENVS="integration" ;;
+              regression-and-integration) ENVS="regression integration" ;;
+              *) echo "unknown TEST_ENV: $TEST_CHOICE"; exit 1 ;;
+            esac
+          elif [ "$REF_NAME" = "main" ]; then
+            TAG="rel$RUN_NO"; ENVS="regression integration"
           else
-            echo "tag=fb${{ github.run_number }}" >> "$GITHUB_OUTPUT"
-            echo "envs=regression" >> "$GITHUB_OUTPUT"
+            TAG="fb$RUN_NO"; ENVS="regression"
           fi
+
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "envs=$ENVS" >> "$GITHUB_OUTPUT"
+          echo "Tag: $TAG  Environments: $ENVS"
 
       - name: Set up Java 17
         uses: actions/setup-java@v4
@@ -90,31 +138,36 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-region: ${{ steps.plan.outputs.region }}
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build and push image
         env:
+          REGISTRY: ${{ steps.plan.outputs.registry }}
+          REPO: ${{ steps.plan.outputs.repo }}
           IMAGE_TAG: ${{ steps.plan.outputs.tag }}
         run: |
-          IMAGE="$ECR_REGISTRY/$ECR_REPO:$IMAGE_TAG"
+          IMAGE="$REGISTRY/$REPO:$IMAGE_TAG"
           docker build -t "$IMAGE" .
           docker push "$IMAGE"
 
       - name: ECR scan summary (non-blocking)
         continue-on-error: true
         env:
+          REPO: ${{ steps.plan.outputs.repo }}
           IMAGE_TAG: ${{ steps.plan.outputs.tag }}
         run: |
-          aws ecr wait image-scan-complete --repository-name "$ECR_REPO" --image-id imageTag="$IMAGE_TAG"
-          aws ecr describe-image-scan-findings --repository-name "$ECR_REPO" \
+          aws ecr wait image-scan-complete --repository-name "$REPO" --image-id imageTag="$IMAGE_TAG"
+          aws ecr describe-image-scan-findings --repository-name "$REPO" \
             --image-id imageTag="$IMAGE_TAG" \
             --query 'imageScanFindings.findingSeverityCounts' --output json
 
       - name: Trigger CD repo (deploy.yml) for each environment
         env:
+          REGISTRY: ${{ steps.plan.outputs.registry }}
+          REPO: ${{ steps.plan.outputs.repo }}
           IMAGE_TAG: ${{ steps.plan.outputs.tag }}
           TEST_ENVS: ${{ steps.plan.outputs.envs }}
         run: |
@@ -124,7 +177,7 @@ jobs:
               -H "Authorization: Bearer ${{ secrets.GH_PAT }}" \
               -H "Accept: application/vnd.github+json" \
               "https://api.github.com/repos/$CD_REPO/actions/workflows/deploy.yml/dispatches" \
-              -d "{\"ref\":\"main\",\"inputs\":{\"ECRURL\":\"$ECR_REGISTRY/\",\"REPO\":\"$ECR_REPO\",\"IMAGE\":\"$IMAGE_TAG\",\"TEST\":\"$TEST_ENV\"}}"
+              -d "{\"ref\":\"main\",\"inputs\":{\"ECRURL\":\"$REGISTRY/\",\"REPO\":\"$REPO\",\"IMAGE\":\"$IMAGE_TAG\",\"TEST\":\"$TEST_ENV\"}}"
             # give the CD run time to commit before the next environment starts
             sleep 60
           done
