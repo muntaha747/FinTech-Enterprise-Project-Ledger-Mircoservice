@@ -120,18 +120,18 @@ jobs:
             -v "$GITHUB_WORKSPACE/trivy-report":/report \
             aquasec/trivy:0.50.0 fs /project --format json --output /report/trivy-report.json
 
-      - name: SonarCloud scan (merged to main only)
-        if: github.event_name == 'pull_request' && github.event.action == 'closed'
+      - name: SonarCloud scan (feature PR and main merge)
         continue-on-error: true
         env:
           SONAR_TOKEN: ${{ secrets.sonarcloud }}
+          SONAR_BRANCH: ${{ (github.event_name == 'pull_request' && github.event.action == 'closed' && 'main') || (github.event_name == 'pull_request' && 'feature') || github.ref_name }}
         run: |
           mvn -B sonar:sonar \
             -Dsonar.projectKey=wezva-fintech_ledger-build \
             -Dsonar.organization=wezva-fintech \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.token=$SONAR_TOKEN \
-            -Dsonar.branch.name=main \
+            -Dsonar.branch.name=$SONAR_BRANCH \
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
             -Dsonar.qualitygate.wait=true
 
