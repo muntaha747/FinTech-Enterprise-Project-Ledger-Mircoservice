@@ -1,16 +1,13 @@
 name: ledger ci build
 
-# feature push      -> build fb<N>  -> CD: functional
+# feature push      -> no run (feature changes go through a PR)
 # pull request      -> build fb<N>  -> CD: functional
-# push to main      -> build rel<N> -> CD: regression + integration
+# PR merged to main -> build rel<N> -> CD: regression + integration (only after a successful PR)
 # manual run        -> build from the chosen branch -> CD: the TEST_ENV you pick
 
 on:
-  push:
-    branches:
-      - feature
-      - main
   pull_request:
+    types: [opened, synchronize, reopened, closed]
     branches:
       - main
   workflow_dispatch:
@@ -47,6 +44,11 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Skip PRs that were closed without merging, and merged PRs that did not come from feature
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.action != 'closed' ||
+      (github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'feature')
 
     steps:
       - name: Checkout
@@ -58,31 +60,31 @@ jobs:
         id: plan
         env:
           EVENT: ${{ github.event_name }}
-          REF_NAME: ${{ github.ref_name }}
+          ACTION: ${{ github.event.action }}
           RUN_NO: ${{ github.run_number }}
           TEST_CHOICE: ${{ inputs.TEST_ENV }}
           IN_REGISTRY: ${{ inputs.ECRURL }}
           IN_REPO: ${{ inputs.APPREPO }}
           IN_REGION: ${{ inputs.REGION }}
         run: |
-          # registry, repo and region: from the manual inputs, or the defaults for push and PR runs
+          # registry, repo and region: from the manual inputs, or the defaults for PR runs
           echo "registry=${IN_REGISTRY:-747240980649.dkr.ecr.us-east-1.amazonaws.com}" >> "$GITHUB_OUTPUT"
           echo "repo=${IN_REPO:-fintech-ledgerservice}" >> "$GITHUB_OUTPUT"
           echo "region=${IN_REGION:-us-east-1}" >> "$GITHUB_OUTPUT"
 
-          if [ "$EVENT" = "pull_request" ]; then
+          if [ "$EVENT" = "pull_request" ] && [ "$ACTION" = "closed" ]; then
+            TAG="rel$RUN_NO"; ENVS="regression integration"
+          elif [ "$EVENT" = "pull_request" ]; then
             TAG="fb$RUN_NO"; ENVS="functional"
           elif [ "$EVENT" = "workflow_dispatch" ]; then
-            if [ "$REF_NAME" = "main" ]; then TAG="rel$RUN_NO"; else TAG="fb$RUN_NO"; fi
+            if [ "${{ github.ref_name }}" = "main" ]; then TAG="rel$RUN_NO"; else TAG="fb$RUN_NO"; fi
             case "$TEST_CHOICE" in
-              functional)                ENVS="functional" ;;
-              regression)                ENVS="regression" ;;
-              integration)               ENVS="integration" ;;
+              functional)                 ENVS="functional" ;;
+              regression)                 ENVS="regression" ;;
+              integration)                ENVS="integration" ;;
               regression-and-integration) ENVS="regression integration" ;;
               *) echo "unknown TEST_ENV: $TEST_CHOICE"; exit 1 ;;
             esac
-          elif [ "$REF_NAME" = "main" ]; then
-            TAG="rel$RUN_NO"; ENVS="regression integration"
           else
             TAG="fb$RUN_NO"; ENVS="functional"
           fi
@@ -118,8 +120,8 @@ jobs:
             -v "$GITHUB_WORKSPACE/trivy-report":/report \
             aquasec/trivy:0.50.0 fs /project --format json --output /report/trivy-report.json
 
-      - name: SonarCloud scan (main push only)
-        if: github.event_name == 'push' && github.ref_name == 'main'
+      - name: SonarCloud scan (merged to main only)
+        if: github.event_name == 'pull_request' && github.event.action == 'closed'
         continue-on-error: true
         env:
           SONAR_TOKEN: ${{ secrets.sonarcloud }}
@@ -129,7 +131,7 @@ jobs:
             -Dsonar.organization=wezva-fintech \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.token=$SONAR_TOKEN \
-            -Dsonar.branch.name=${{ github.ref_name }} \
+            -Dsonar.branch.name=main \
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
             -Dsonar.qualitygate.wait=true
 
