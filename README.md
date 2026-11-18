@@ -265,8 +265,8 @@ sudo apt install -y git openjdk-17-jdk maven
 java --version
 mvn --version
 
-git clone https://github.com/muntaha747/FinTech-Enterprise-Project-Ledger-Mircoservice.git
-cd FinTech-Enterprise-Project-Ledger-Mircoservice
+git clone https://github.com/muntaha747/FinTech-Enterprise-Project-Ledger-Mircoservice-CI-Build-Pipeline.git
+cd FinTech-Enterprise-Project-Ledger-Mircoservice-CI-Build-Pipeline
 git checkout feature
 mvn clean package -Dmaven.test.skip=true     # build the jar without tests
 
