@@ -1,8 +1,9 @@
-name: ledger build and scan
+name: ledger build and scan on feature and main branch
 
 on:
   push:
     branches:
+      - main
       - feature
   pull_request:
     branches:
