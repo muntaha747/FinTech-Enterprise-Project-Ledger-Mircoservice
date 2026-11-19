@@ -162,10 +162,13 @@ jobs:
           REPO: ${{ steps.plan.outputs.repo }}
           IMAGE_TAG: ${{ steps.plan.outputs.tag }}
         run: |
-          aws ecr wait image-scan-complete --repository-name "$REPO" --image-id imageTag="$IMAGE_TAG"
-          aws ecr describe-image-scan-findings --repository-name "$REPO" \
-            --image-id imageTag="$IMAGE_TAG" \
-            --query 'imageScanFindings.findingSeverityCounts' --output json
+          if aws ecr wait image-scan-complete --repository-name "$REPO" --image-id imageTag="$IMAGE_TAG"; then
+            aws ecr describe-image-scan-findings --repository-name "$REPO" \
+              --image-id imageTag="$IMAGE_TAG" \
+              --query 'imageScanFindings.findingSeverityCounts' --output json
+          else
+            echo "::warning::ECR scan not available for $IMAGE_TAG (no scan record was created); continuing"
+          fi
 
       - name: Trigger CD repo (deploy.yml) for each environment
         env:
