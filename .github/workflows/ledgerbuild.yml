@@ -1,10 +1,8 @@
 name: ledger ci build
-
 # push to feature   -> build fb<N>  -> CD: functional
 # pull request      -> build fb<N>  -> CD: functional
 # PR merged to main -> build rel<N> -> CD: regression + integration (only after a successful PR)
 # manual run        -> build from the chosen branch -> CD: the TEST_ENV you pick
-
 on:
   push:
     branches:
@@ -181,7 +179,7 @@ jobs:
             curl -fsS -X POST \
               -H "Authorization: Bearer ${{ secrets.GH_PAT }}" \
               -H "Accept: application/vnd.github+json" \
-              "https://api.github.com/repos/$CD_REPO/actions/workflows/deploy.yml/dispatches" \
+              "https://api.github.com/repos/muntaha747/FinTech-Enterprise-Project-Ledger-Mircoservice-Deployment-Pipeline/actions/workflows/deploy.yml/dispatches" \
               -d "{\"ref\":\"main\",\"inputs\":{\"ECRURL\":\"$REGISTRY/\",\"REPO\":\"$REPO\",\"IMAGE\":\"$IMAGE_TAG\",\"TEST\":\"$TEST_ENV\"}}"
             # give the CD run time to commit before the next environment starts
             sleep 60
