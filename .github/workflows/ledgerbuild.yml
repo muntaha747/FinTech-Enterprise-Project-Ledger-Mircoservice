@@ -32,7 +32,7 @@ on:
         description: "Environment to deploy to after the build"
         required: true
         type: choice
-        default: "regression"
+        default: "functional"
         options:
           - functional
           - regression
@@ -40,7 +40,7 @@ on:
           - regression-and-integration
 
 env:
-  CD_REPO: muntaha747/FinTech-Enterprise-Project-Ledger-Mircoservice-Deployment-Pipeline
+  CD_REPO: muntaha747/FinTech-Ledger-Deployment-MicroService
 
 jobs:
   build:
@@ -56,44 +56,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Decide image tag, registry and test environments
-        id: plan
-        env:
-          EVENT: ${{ github.event_name }}
-          ACTION: ${{ github.event.action }}
-          RUN_NO: ${{ github.run_number }}
-          TEST_CHOICE: ${{ inputs.TEST_ENV }}
-          IN_REGISTRY: ${{ inputs.ECRURL }}
-          IN_REPO: ${{ inputs.APPREPO }}
-          IN_REGION: ${{ inputs.REGION }}
-        run: |
-          # registry, repo and region: from the manual inputs, or the defaults for PR runs
-          echo "registry=${IN_REGISTRY:-747240980649.dkr.ecr.us-east-1.amazonaws.com}" >> "$GITHUB_OUTPUT"
-          echo "repo=${IN_REPO:-fintech-ledgerservice}" >> "$GITHUB_OUTPUT"
-          echo "region=${IN_REGION:-us-east-1}" >> "$GITHUB_OUTPUT"
-
-          if [ "$EVENT" = "pull_request" ] && [ "$ACTION" = "closed" ]; then
-            TAG="rel$RUN_NO"; ENVS="regression integration"
-          elif [ "$EVENT" = "pull_request" ]; then
-            TAG="fb$RUN_NO"; ENVS="functional"
-          elif [ "$EVENT" = "workflow_dispatch" ]; then
-            if [ "${{ github.ref_name }}" = "main" ]; then TAG="rel$RUN_NO"; else TAG="fb$RUN_NO"; fi
-            case "$TEST_CHOICE" in
-              functional)                 ENVS="functional" ;;
-              regression)                 ENVS="regression" ;;
-              integration)                ENVS="integration" ;;
-              regression-and-integration) ENVS="regression integration" ;;
-              *) echo "unknown TEST_ENV: $TEST_CHOICE"; exit 1 ;;
-            esac
-          else
-            TAG="fb$RUN_NO"; ENVS="functional"
-          fi
-
-          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-          echo "envs=$ENVS" >> "$GITHUB_OUTPUT"
-          echo "Tag: $TAG  Environments: $ENVS"
-
       - name: Set up Java 21
         uses: actions/setup-java@v4
         with:
@@ -116,9 +78,7 @@ jobs:
         continue-on-error: true
         run: |
           mkdir -p trivy-report
-          docker run --rm \
-            -v "$GITHUB_WORKSPACE":/project \
-            -v "$GITHUB_WORKSPACE/trivy-report":/report \
+          docker run --rm -v "$GITHUB_WORKSPACE":/project -v "$GITHUB_WORKSPACE/trivy-report":/report \
             aquasec/trivy:0.50.0 fs /project --format json --output /report/trivy-report.json
 
       - name: SonarCloud scan (feature PR and main merge)
@@ -136,31 +96,55 @@ jobs:
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
             -Dsonar.qualitygate.wait=true
 
+      - name: Decide image tag and registry
+        id: image
+        env:
+          EVENT: ${{ github.event_name }}
+          ACTION: ${{ github.event.action }}
+          RUN_NO: ${{ github.run_number }}
+          REF_NAME: ${{ github.ref_name }}
+          IN_REGISTRY: ${{ inputs.ECRURL }}
+          IN_REPO: ${{ inputs.APPREPO }}
+          IN_REGION: ${{ inputs.REGION }}
+        run: |
+          echo "registry=${IN_REGISTRY:-747240980649.dkr.ecr.us-east-1.amazonaws.com}" >> "$GITHUB_OUTPUT"
+          echo "repo=${IN_REPO:-fintech-ledgerservice}" >> "$GITHUB_OUTPUT"
+          echo "region=${IN_REGION:-us-east-1}" >> "$GITHUB_OUTPUT"
+          if { [ "$EVENT" = "pull_request" ] && [ "$ACTION" = "closed" ]; } || \
+             { [ "$EVENT" = "workflow_dispatch" ] && [ "$REF_NAME" = "main" ]; }; then
+            TAG="rel$RUN_NO"
+          else
+            TAG="fb$RUN_NO"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ steps.plan.outputs.region }}
+          aws-region: ${{ steps.image.outputs.region }}
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build and push image
-        env:
-          REGISTRY: ${{ steps.plan.outputs.registry }}
-          REPO: ${{ steps.plan.outputs.repo }}
-          IMAGE_TAG: ${{ steps.plan.outputs.tag }}
-        run: |
-          IMAGE="$REGISTRY/$REPO:$IMAGE_TAG"
-          docker build -t "$IMAGE" .
-          docker push "$IMAGE"
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.image.outputs.registry }}/${{ steps.image.outputs.repo }}:${{ steps.image.outputs.tag }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: ECR scan summary (non-blocking)
         continue-on-error: true
         env:
-          REPO: ${{ steps.plan.outputs.repo }}
-          IMAGE_TAG: ${{ steps.plan.outputs.tag }}
+          REPO: ${{ steps.image.outputs.repo }}
+          IMAGE_TAG: ${{ steps.image.outputs.tag }}
         run: |
           if aws ecr wait image-scan-complete --repository-name "$REPO" --image-id imageTag="$IMAGE_TAG"; then
             aws ecr describe-image-scan-findings --repository-name "$REPO" \
@@ -169,20 +153,40 @@ jobs:
           else
             echo "::warning::ECR scan not available for $IMAGE_TAG (no scan record was created); continuing"
           fi
-
+      - name: Decide test environments
+        id: envs
+        env:
+          EVENT: ${{ github.event_name }}
+          ACTION: ${{ github.event.action }}
+          TEST_CHOICE: ${{ inputs.TEST_ENV }}
+        run: |
+          if [ "$EVENT" = "pull_request" ] && [ "$ACTION" = "closed" ]; then
+            ENVS="regression integration"
+          elif [ "$EVENT" = "workflow_dispatch" ]; then
+            case "$TEST_CHOICE" in
+              functional)                 ENVS="functional" ;;
+              regression)                 ENVS="regression" ;;
+              integration)                ENVS="integration" ;;
+              regression-and-integration) ENVS="regression integration" ;;
+              *) echo "unknown TEST_ENV: $TEST_CHOICE"; exit 1 ;;
+            esac
+          else
+            ENVS="functional"
+          fi
+          echo "envs=$ENVS" >> "$GITHUB_OUTPUT"
       - name: Trigger CD repo (deploy.yml) for each environment
         env:
-          REGISTRY: ${{ steps.plan.outputs.registry }}
-          REPO: ${{ steps.plan.outputs.repo }}
-          IMAGE_TAG: ${{ steps.plan.outputs.tag }}
-          TEST_ENVS: ${{ steps.plan.outputs.envs }}
+          REGISTRY: ${{ steps.image.outputs.registry }}
+          REPO: ${{ steps.image.outputs.repo }}
+          IMAGE_TAG: ${{ steps.image.outputs.tag }}
+          TEST_ENVS: ${{ steps.image.outputs.envs }}
         run: |
           for TEST_ENV in $TEST_ENVS; do
             echo "CD: $TEST_ENV <- $IMAGE_TAG"
             curl -fsS -X POST \
               -H "Authorization: Bearer ${{ secrets.GH_PAT }}" \
               -H "Accept: application/vnd.github+json" \
-              "https://api.github.com/repos/muntaha747/FinTech-Enterprise-Project-Ledger-Mircoservice-Deployment-Pipeline/actions/workflows/deploy.yml/dispatches" \
+              "https://api.github.com/repos/muntaha747/FinTech-Ledger-Deployment-MicroService/actions/workflows/deploy.yml/dispatches" \
               -d "{\"ref\":\"main\",\"inputs\":{\"ECRURL\":\"$REGISTRY/\",\"REPO\":\"$REPO\",\"IMAGE\":\"$IMAGE_TAG\",\"TEST\":\"$TEST_ENV\"}}"
             # give the CD run time to commit before the next environment starts
             sleep 60
