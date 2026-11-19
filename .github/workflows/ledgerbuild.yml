@@ -1,5 +1,5 @@
 name: ledger ci build
-# push to feature   -> build fb<N>  -> CD: functional
+# push to feature   -> build fb<N>  -> CD: functional####
 # pull request      -> build fb<N>  -> CD: functional
 # PR merged to main -> build rel<N> -> CD: regression + integration (only after a successful PR)
 # manual run        -> build from the chosen branch -> CD: the TEST_ENV you pick
