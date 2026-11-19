@@ -130,8 +130,8 @@ jobs:
           SONAR_BRANCH: ${{ (github.event_name == 'pull_request' && github.event.action == 'closed' && 'main') || (github.event_name == 'pull_request' && 'feature') || github.ref_name }}
         run: |
           mvn -B sonar:sonar \
-            -Dsonar.projectKey=wezva-fintech_ledger-build \
-            -Dsonar.organization=wezva-fintech \
+            -Dsonar.projectKey=muntaha747_FinTech-Enterprise-Project-Ledger-Mircoservice \
+            -Dsonar.organization=muntaha747 \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.token=$SONAR_TOKEN \
             -Dsonar.branch.name=$SONAR_BRANCH \

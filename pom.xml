@@ -26,7 +26,8 @@
         <sonar.dependencyCheck.jsonReportPath>target/dependency-check-report.json</sonar.dependencyCheck.jsonReportPath>
         <sonar.dependencyCheck.htmlReportPath>target/dependency-check-report.html</sonar.dependencyCheck.htmlReportPath>
 
-        <sonar.organization>wezva-fintech</sonar.organization>
+        <sonar.organization>muntaha747</sonar.organization>
+        <sonar.projectKey>muntaha747_FinTech-Enterprise-Project-Ledger-Mircoservice</sonar.projectKey>
     </properties>
 
     <dependencies>
