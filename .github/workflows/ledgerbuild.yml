@@ -1,249 +1,189 @@
-name: ledger build and scan on feature and main branch
-
+name: ledger ci build
+# push to feature   -> build fb<N>  -> CD: functional####
+# pull request      -> build fb<N>  -> CD: functional
+# PR merged to main -> build rel<N> -> CD: regression + integration (only after a successful PR)
+# manual run        -> build from the chosen branch -> CD: the TEST_ENV you pick
 on:
   push:
     branches:
-      - main
       - feature
   pull_request:
+    types: [opened, synchronize, reopened, closed]
     branches:
-      - main  
+      - main
   workflow_dispatch:
-   inputs:
-     ECRURL:
-      description: "ECR Registry URL"
-      required: true
-      default: "747240980649.dkr.ecr.us-east-1.amazonaws.com"
+    inputs:
+      ECRURL:
+        description: "ECR Registry URL"
+        required: true
+        default: "747240980649.dkr.ecr.us-east-1.amazonaws.com"
 
-     APPREPO:
-      description: "Elastic Container Registry Name"
-      required: true
-      default: "fintech-ledgerservice"
+      APPREPO:
+        description: "Elastic Container Registry Name"
+        required: true
+        default: "fintech-ledgerservice"
 
-     REGION:
-      description: "AWS Region"
-      required: true
-      default: "us-east-1"  
+      REGION:
+        description: "AWS Region"
+        required: true
+        default: "us-east-1"
+
+      TEST_ENV:
+        description: "Environment to deploy to after the build"
+        required: true
+        type: choice
+        default: "regression"
+        options:
+          - functional
+          - regression
+          - integration
+          - regression-and-integration
+
 env:
-    TAG_PREFIX: ${{ github.ref == 'refs/heads/main' && 'rel' || 'fb' }}
+  CD_REPO: muntaha747/FinTech-Enterprise-Project-Ledger-Mircoservice-Deployment-Pipeline
+
 jobs:
-  build-and-scan:
+  build:
     runs-on: ubuntu-latest
+    # Skip PRs that were closed without merging, and merged PRs that did not come from feature
+    if: >-
+      github.event_name != 'pull_request' ||
+      github.event.action != 'closed' ||
+      (github.event.pull_request.merged == true && github.event.pull_request.head.ref == 'feature')
 
     steps:
-      # -----------------------------
-      # Checkout Code
-      # -----------------------------
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Verify files
+      - name: Decide image tag, registry and test environments
+        id: plan
+        env:
+          EVENT: ${{ github.event_name }}
+          ACTION: ${{ github.event.action }}
+          RUN_NO: ${{ github.run_number }}
+          TEST_CHOICE: ${{ inputs.TEST_ENV }}
+          IN_REGISTRY: ${{ inputs.ECRURL }}
+          IN_REPO: ${{ inputs.APPREPO }}
+          IN_REGION: ${{ inputs.REGION }}
         run: |
-          echo "Repository successfully checked out"
-          ls -R
+          # registry, repo and region: from the manual inputs, or the defaults for PR runs
+          echo "registry=${IN_REGISTRY:-747240980649.dkr.ecr.us-east-1.amazonaws.com}" >> "$GITHUB_OUTPUT"
+          echo "repo=${IN_REPO:-fintech-ledgerservice}" >> "$GITHUB_OUTPUT"
+          echo "region=${IN_REGION:-us-east-1}" >> "$GITHUB_OUTPUT"
 
-      # -----------------------------
-      # Setup Java
-      # -----------------------------
-      - name: Setup Java
+          if [ "$EVENT" = "pull_request" ] && [ "$ACTION" = "closed" ]; then
+            TAG="rel$RUN_NO"; ENVS="regression integration"
+          elif [ "$EVENT" = "pull_request" ]; then
+            TAG="fb$RUN_NO"; ENVS="functional"
+          elif [ "$EVENT" = "workflow_dispatch" ]; then
+            if [ "${{ github.ref_name }}" = "main" ]; then TAG="rel$RUN_NO"; else TAG="fb$RUN_NO"; fi
+            case "$TEST_CHOICE" in
+              functional)                 ENVS="functional" ;;
+              regression)                 ENVS="regression" ;;
+              integration)                ENVS="integration" ;;
+              regression-and-integration) ENVS="regression integration" ;;
+              *) echo "unknown TEST_ENV: $TEST_CHOICE"; exit 1 ;;
+            esac
+          else
+            TAG="fb$RUN_NO"; ENVS="functional"
+          fi
+
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "envs=$ENVS" >> "$GITHUB_OUTPUT"
+          echo "Tag: $TAG  Environments: $ENVS"
+
+      - name: Set up Java 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
 
-      # -----------------------------
-      # Build Spring Boot Jar
-      # -----------------------------
-      - name: Build Spring Boot Jar
-        run: mvn clean package -Dmaven.test.skip=true
-
-      - name: Rename Artifact
-        run: cp target/*.jar target/backend_rel${{ github.run_number }}.jar
-
-      # -----------------------------
-      # Configure Docker API for Testcontainers
-      # -----------------------------
-      - name: Configure Docker API Version
+      - name: Docker API version for Testcontainers
         run: echo "api.version=1.44" >> ~/.docker-java.properties
 
-      # -----------------------------
-      # Code Coverage Report (JaCoCo)
-      # -----------------------------
-      - name: Code Coverage Report (JaCoCo)
-        run: mvn verify -Ddependency-check.skip=true
+      - name: Build and test (JaCoCo)
+        run: mvn -B clean verify -Ddependency-check.skip=true
 
-      - name: Upload JaCoCo Report
+      - name: Upload JaCoCo report
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
           path: target/site/jacoco
 
-      # -----------------------------
-      # Trivy Dependency Check (SCA)
-      # -----------------------------
-      - name: Trivy FS Scan (SCA)
+      - name: Trivy filesystem scan
         continue-on-error: true
         run: |
           mkdir -p trivy-report
-          
           docker run --rm \
-            -v ${{ github.workspace }}:/project \
-            -v ${{ github.workspace }}/trivy-report:/report \
-            aquasec/trivy:0.50.0 \
-            fs /project \
-            --format json \
-            --output /report/trivy-report.json
+            -v "$GITHUB_WORKSPACE":/project \
+            -v "$GITHUB_WORKSPACE/trivy-report":/report \
+            aquasec/trivy:0.50.0 fs /project --format json --output /report/trivy-report.json
 
-      - name: Upload Trivy Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: trivy-report
-          path: ./trivy-report
-
-      # ---------------------
-      # SonarCloud SAST Scan
-      # ---------------------
-      - name: SonarCloud SAST Scan
+      - name: SonarCloud scan (feature PR and main merge)
         continue-on-error: true
-        if: github.ref == 'refs/heads/main'
         env:
           SONAR_TOKEN: ${{ secrets.sonarcloud }}
+          SONAR_BRANCH: ${{ (github.event_name == 'pull_request' && github.event.action == 'closed' && 'main') || (github.event_name == 'pull_request' && 'feature') || github.ref_name }}
         run: |
-          mvn sonar:sonar \
-            -Dsonar.projectKey=wezva-fintech_ledger-build \
-            -Dsonar.organization=wezva-fintech \
+          mvn -B sonar:sonar \
+            -Dsonar.projectKey=muntaha747_FinTech-Enterprise-Project-Ledger-Mircoservice \
+            -Dsonar.organization=muntaha747 \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.token=$SONAR_TOKEN \
-            -Dsonar.branch.name=${{ github.ref_name }} \
+            -Dsonar.branch.name=$SONAR_BRANCH \
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
-            -Dsonar.qualitygate.wait=true #For quality gate
+            -Dsonar.qualitygate.wait=true
 
-      # -----------------------------
-      # Configure AWS Credentials
-      # -----------------------------     
-      - name: Configure AWS Credentials
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ inputs.REGION || 'us-east-1' }}
+          aws-region: ${{ steps.plan.outputs.region }}
 
-      # -----------------------------
-      # Login to Amazon ECR
-      # -----------------------------
       - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2 
+        uses: aws-actions/amazon-ecr-login@v2
 
-      # -----------------------------
-      # Build & Push Docker Image
-      # ----------------------------- 
-      - name: Build and Push Docker Image
+      - name: Build and push image
         env:
-          ECR_REGISTRY: ${{ inputs.ECRURL || '747240980649.dkr.ecr.us-east-1.amazonaws.com' }}
-          REPOSITORY: ${{ inputs.APPREPO || 'fintech-ledgerservice' }}
-          IMAGE_TAG:  ${{ env.TAG_PREFIX }}${{ github.run_number }}
+          REGISTRY: ${{ steps.plan.outputs.registry }}
+          REPO: ${{ steps.plan.outputs.repo }}
+          IMAGE_TAG: ${{ steps.plan.outputs.tag }}
         run: |
-          echo "Building Docker Image..."
-          docker build -t $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG .
-          echo "Pushing Docker Image..."
-          docker push $ECR_REGISTRY/$REPOSITORY:$IMAGE_TAG  
+          IMAGE="$REGISTRY/$REPO:$IMAGE_TAG"
+          docker build -t "$IMAGE" .
+          docker push "$IMAGE"
 
-      # ------------------------
-      # Wait till scan complete
-      # ------------------------
-      - name: Wait for Scan Completion
+      - name: ECR scan summary (non-blocking)
+        continue-on-error: true
+        env:
+          REPO: ${{ steps.plan.outputs.repo }}
+          IMAGE_TAG: ${{ steps.plan.outputs.tag }}
         run: |
-          for i in {1..12}; do
-            STATUS=$(aws ecr describe-image-scan-findings \
-              --repository-name ${{ inputs.APPREPO || 'fintech-ledgerservice' }} \
-              --image-id imageTag=${{ env.TAG_PREFIX }}${{ github.run_number }} \
-              --query 'imageScanStatus.status' \
-              --output text 2>/dev/null || echo "NOT_FOUND")
-
-            echo "Scan Status: $STATUS"
-
-            if [ "$STATUS" = "COMPLETE" ]; then
-              break
-            fi
-
-            if [ "$STATUS" = "FAILED" ]; then
-              echo "Scan failed"
-              exit 1
-            fi
-
-            if [ "$STATUS" = "NOT_FOUND" ]; then
-              echo "Scan not yet available, retrying..."
-            fi
-
-            sleep 10
-          done
-
-      # ------------------------
-      # Get vulnerability details
-      # ------------------------
-      - name: Get Vulnerability Counts
-        id: scan
-        run: |
-          CRITICAL=$(aws ecr describe-image-scan-findings \
-            --repository-name ${{ inputs.APPREPO || 'fintech-ledgerservice' }} \
-            --image-id imageTag=${{ env.TAG_PREFIX }}${{ github.run_number }} \
-            --query 'imageScanFindings.findingSeverityCounts.CRITICAL' \
-            --output text 2>/dev/null || echo 0)
-
-          HIGH=$(aws ecr describe-image-scan-findings \
-            --repository-name ${{ inputs.APPREPO || 'fintech-ledgerservice' }} \
-            --image-id imageTag=${{ env.TAG_PREFIX }}${{ github.run_number }} \
-            --query 'imageScanFindings.findingSeverityCounts.HIGH' \
-            --output text 2>/dev/null || echo 0)
-
-          echo "Critical: $CRITICAL"
-          echo "High: $HIGH"
-
-          echo "critical=$CRITICAL" >> $GITHUB_OUTPUT
-          echo "high=$HIGH" >> $GITHUB_OUTPUT   
-          
-      # -----------------------
-      # Quality Gate for Image
-      # ----------------------   
-      - name: Enforce Security Gate (Ignore Failures)
-        continue-on-error: true # ----------> Because here we have high & critical Vulnerability
-        run: |
-          CRITICAL=${{ steps.scan.outputs.critical }}
-          HIGH=${{ steps.scan.outputs.high }}
-
-          if [ "$CRITICAL" -gt 0 ] || [ "$HIGH" -gt 0 ]; then
-            echo "⚠️ Vulnerabilities found but ignored"
-            exit 1
+          if aws ecr wait image-scan-complete --repository-name "$REPO" --image-id imageTag="$IMAGE_TAG"; then
+            aws ecr describe-image-scan-findings --repository-name "$REPO" \
+              --image-id imageTag="$IMAGE_TAG" \
+              --query 'imageScanFindings.findingSeverityCounts' --output json
           else
-            echo "✅ No vulnerabilities"
+            echo "::warning::ECR scan not available for $IMAGE_TAG (no scan record was created); continuing"
           fi
 
-  # -----------------------------
-  # Trigger CD Job
-  # -----------------------------
-  trigger-cd-pipeline:
-    runs-on: ubuntu-latest
-    needs: build-and-scan
-    if: ${{ success() && github.ref == 'refs/heads/main' }}
-
-    steps:
-      - name: Trigger CD Pipeline
+      - name: Trigger CD repo (deploy.yml) for each environment
+        env:
+          REGISTRY: ${{ steps.plan.outputs.registry }}
+          REPO: ${{ steps.plan.outputs.repo }}
+          IMAGE_TAG: ${{ steps.plan.outputs.tag }}
+          TEST_ENVS: ${{ steps.plan.outputs.envs }}
         run: |
-          IMAGE_TAG="rel${{ github.run_number }}"
-
-          curl -X POST \
-          -H "Authorization: Bearer ${{ secrets.GH_PAT }}" \
-          -H "Accept: application/vnd.github+json" \
-          https://api.github.com/repos/wezva-fintech/ledger-deployment/actions/workflows/deploy.yml/dispatches \
-          -d "{
-            \"ref\":\"main\",
-            \"inputs\": {
-              \"ECRURL\": \"${{ inputs.ECRURL }}/\",
-              \"REPO\": \"${{ inputs.APPREPO }}\",
-              \"IMAGE\": \"$IMAGE_TAG\",
-              \"TEST\": \"regression\"
-            }
-          }"
+          for TEST_ENV in $TEST_ENVS; do
+            echo "CD: $TEST_ENV <- $IMAGE_TAG"
+            curl -fsS -X POST \
+              -H "Authorization: Bearer ${{ secrets.GH_PAT }}" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/muntaha747/FinTech-Enterprise-Project-Ledger-Mircoservice-Deployment-Pipeline/actions/workflows/deploy.yml/dispatches" \
+              -d "{\"ref\":\"main\",\"inputs\":{\"ECRURL\":\"$REGISTRY/\",\"REPO\":\"$REPO\",\"IMAGE\":\"$IMAGE_TAG\",\"TEST\":\"$TEST_ENV\"}}"
+            # give the CD run time to commit before the next environment starts
+            sleep 60
+          done
