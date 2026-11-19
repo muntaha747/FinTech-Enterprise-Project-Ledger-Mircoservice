@@ -1,5 +1,7 @@
 # Ledger Microservice · CI/CD with Trunk-Based Development
 
+> **Programming language: Java (Spring Boot).** This is a **Java Spring Boot Microservice**.
+
 > A **Java 17 · Spring Boot 3.1.2 · MySQL** ledger (books) microservice built with **Maven**, delivered through **GitHub Actions** (CI) and **Argo CD** (CD) across **dev → qa → stage → prod**.
 
 ## 🗺️ Pipeline at a Glance
@@ -265,8 +267,8 @@ sudo apt install -y git openjdk-17-jdk maven
 java --version
 mvn --version
 
-git clone https://github.com/muntaha747/FinTech-Enterprise-Project-Ledger-Mircoservice-CI-Build-Pipeline.git
-cd FinTech-Enterprise-Project-Ledger-Mircoservice-CI-Build-Pipeline
+git clone https://github.com/muntaha747/FinTech-Ledger-CI-MicroService.git
+cd FinTech-Ledger-CI-MicroService
 git checkout feature
 mvn clean package -Dmaven.test.skip=true     # build the jar without tests
 

@@ -39,8 +39,8 @@ sudo apt install -y git openjdk-17-jdk maven
 java --version
 mvn --version
 
-git clone https://github.com/muntaha747/FinTech-Enterprise-Project-Ledger-Mircoservice-CI-Build-Pipeline.git
-cd FinTech-Enterprise-Project-Ledger-Mircoservice-CI-Build-Pipeline
+git clone https://github.com/muntaha747/FinTech-Ledger-CI-MicroService.git
+cd FinTech-Ledger-CI-MicroService
 git checkout feature
 mvn clean package -Dmaven.test.skip=true     # build the jar, no tests
 mvn verify -Ddependency-check.skip=true      # tests + JaCoCo coverage (as in CI)
