@@ -93,18 +93,25 @@ jobs:
           name: jacoco-report
           path: target/site/jacoco
 
-      # ---------- SCA: dependency scan ----------
+      # ---------- SCA: dependency scan (JSON + SARIF for SonarCloud) ----------  # CHANGED
       - name: Trivy filesystem scan (pom.xml dependencies)
         continue-on-error: true
         run: |
+          # Scan once, save JSON (skip target/ so the built jar isn't scanned twice)
           docker run --rm \
             -v "$HOME/.cache/trivy":/root/.cache/ \
             -v "${GITHUB_WORKSPACE}":/repo -w /repo \
             aquasec/trivy:0.50.0 \
-            fs . --format json --output reports/trivy-fs.json
+            fs . --skip-dirs target --format json --output reports/trivy-fs.json
+
+          # Convert the same results to SARIF for SonarCloud
+          docker run --rm \
+            -v "${GITHUB_WORKSPACE}":/repo -w /repo \
+            aquasec/trivy:0.50.0 \
+            convert --format sarif --output reports/trivy-fs.sarif reports/trivy-fs.json
 
       # ---------- SAST + quality gate ----------
-      - name: SonarCloud scan (with Gitleaks report)
+      - name: SonarCloud scan (with Gitleaks + Trivy reports)          # CHANGED
         continue-on-error: true
         env:
           SONAR_TOKEN: ${{ secrets.SONARCLOUD }}
@@ -118,7 +125,7 @@ jobs:
             -Dsonar.token=${SONAR_TOKEN} \
             -Dsonar.branch.name=${SONAR_BRANCH} \
             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
-            -Dsonar.sarifReportPaths=reports/gitleaks.sarif \
+            -Dsonar.sarifReportPaths=reports/gitleaks.sarif,reports/trivy-fs.sarif \
             -Dsonar.qualitygate.wait=true
 
       # After Sonar, so the findings reach the SonarCloud dashboard first
@@ -168,7 +175,7 @@ jobs:
 
       # ---------- Image scan: full JSON report (never blocks) ----------
       - name: Trivy image scan - full report
-        continue-on-error: true 
+        continue-on-error: true
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
@@ -178,9 +185,9 @@ jobs:
             --format json --output reports/trivy-image.json \
             "$REGISTRY/$ECR_REPO:$TAG"
 
-      # ---------- Image scan: gate (blocks on fixable CRITICAL) ----------
+      # ---------- Image scan: gate (TEMPORARILY non-blocking) ----------
       - name: Trivy image scan - gate (fixable CRITICAL)
-        continue-on-error: true 
+        continue-on-error: true          # TEMPORARY: remove after fixing base image + Spring Boot
         run: |
           docker run --rm \
             -v /var/run/docker.sock:/var/run/docker.sock \
