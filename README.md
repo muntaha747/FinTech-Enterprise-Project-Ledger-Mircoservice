@@ -4,6 +4,73 @@
 
 > A **Java 17 · Spring Boot 3.1.2 · MySQL** ledger (books) microservice built with **Maven**, delivered through **GitHub Actions** (CI) and **Argo CD** (CD) across **dev → qa → stage → prod**.
 
+## 🎤 Interview Guide: The Full DevSecOps Flow
+
+This section explains the whole pipeline in plain words. Read it before an interview.
+
+**What the application is:** the Ledger service is a **Java Spring Boot microservice**. It is a REST API for books and ledger entries, written in Java, built with **Maven**, and packaged as a Spring Boot JAR. The project targets **Java 17** (`pom.xml`). The CI workflow builds with **JDK 21**, which compiles Java 17 code without problems.
+
+![DevSecOps full flow](docs/diagrams/devsecops-full-flow.svg)
+
+### 🔁 When the pipeline runs
+
+| Event | What happens |
+|---|---|
+| Push to `feature` | Full CI runs, builds a `fb-` image, and deploys to **functional** |
+| Pull request opened, updated or reopened (to `main` or `feature`) | Full CI runs, builds a `fb-` image |
+| Pull request **merged** from `feature` into `main` | Full CI runs, builds a `rel-` image, and deploys to **regression** and **integration** |
+| Pull request **closed without merge** | CI is skipped |
+| Manual run (`workflow_dispatch`) | Builds from the chosen branch and deploys to the environment you pick |
+
+### 🧩 Step by step
+
+| # | Step | What it does | Tool | Why it matters |
+|---|---|---|---|---|
+| 1 | **Checkout** | Downloads the full Git history (`fetch-depth: 0`) | `actions/checkout` | Gitleaks and SonarCloud need the full history |
+| 2 | **Secret scan** | Looks for passwords, tokens and keys in the files of the repo. Writes a SARIF report | **Gitleaks** | Stops secrets from reaching `main` |
+| 3 | **Set up Java** | Installs JDK 21 and caches Maven downloads | `actions/setup-java` | Same Java toolchain on every run |
+| 4 | **Build and test** | `mvn clean verify`: compiles, runs unit tests and integration tests, packages the JAR | **Maven**, **JUnit 5**, **Testcontainers** | Broken code fails here, before any image is built |
+| 5 | **Coverage report** | Measures how much code the tests cover and uploads the HTML report | **JaCoCo** | Shows which code is not tested |
+| 6 | **Dependency scan (SCA)** | Checks `pom.xml` libraries for known CVEs. Writes JSON and SARIF | **Trivy** (filesystem mode) | Finds vulnerable third-party libraries |
+| 7 | **Code scan (SAST) and quality gate** | Analyses the source code for bugs and security issues. Sends the Gitleaks and Trivy reports too. Waits for the quality gate result | **SonarCloud** | Finds insecure code patterns and enforces quality rules |
+| 8 | **Fail on secrets** | If Gitleaks found anything, the job fails. This runs after SonarCloud, so findings still reach the dashboard | Shell (`exit 1`) | Enforces the "no secrets" rule |
+| 9 | **Decide image tag** | Builds the tag from the event, run number and short commit ID, for example `fb-42-a1b2c3d4` or `rel-43-e5f6a7b8` | Shell | Each image can be traced back to one run and one commit |
+| 10 | **Build image** | Builds the Docker image locally (not pushed yet) | **Docker Buildx**, `docker/build-push-action` | Scan the image before it leaves the runner |
+| 11 | **Image scan (full report)** | Scans the image for OS and library vulnerabilities and saves a JSON report. Never blocks | **Trivy** (image mode) | Gives a complete list for review |
+| 12 | **Image scan (gate)** | Fails on fixable CRITICAL vulnerabilities. **Temporarily non-blocking** until the base image and Spring Boot are upgraded | **Trivy** | Stops known critical flaws from shipping |
+| 13 | **AWS login** | Logs in to AWS with access keys and then to Amazon ECR | `aws-actions/configure-aws-credentials`, `amazon-ecr-login` | The image can be pushed to the private registry |
+| 14 | **Push to ECR** | Pushes the image to the Amazon ECR repository | **Amazon ECR**, Docker | The image becomes available to Kubernetes |
+| 15 | **ECR scan report** | Waits for ECR's scan-on-push result. Saves the digest, size, push time and findings. Writes a summary on the run page | **AWS CLI**, **jq**, **ECR scan** | A second, independent vulnerability scan |
+| 16 | **Upload reports** | Saves every report (even if an earlier step failed) as a downloadable artifact | `actions/upload-artifact` | Auditors and reviewers can read the evidence |
+| 17 | **Trigger CD** | Calls the GitHub API to start `deploy.yml` in the deployment repo once per environment. Waits 60 seconds between environments | **GitHub API**, **PAT** (`GH_PAT`), `curl` | Separates build (CI) from deploy (CD) |
+| 18 | **Update values** | The deployment repo writes the new image repo and tag into `envs/<env>/values.yaml`, then commits and pushes | **Helm** values, Git | Git records exactly what was deployed |
+| 19 | **Argo CD sync** | Argo CD sees the new commit, compares it with the cluster and applies the change. It auto-syncs and self-heals | **Argo CD** (GitOps) | Git is the single source of truth. No manual `kubectl` |
+
+### 🛡️ DevSecOps tools and what they protect
+
+| Tool | Category | What it catches | Where it runs |
+|---|---|---|---|
+| **Gitleaks** | Secret scanning | Passwords, API keys, tokens in the repo files | Step 2 |
+| **Maven + JUnit 5 + Testcontainers** | Build and test | Functional bugs, and database tests in real containers | Step 4 |
+| **JaCoCo** | Code coverage | Untested code | Step 5 |
+| **Trivy (filesystem)** | SCA (dependency scan) | Known CVEs in libraries from `pom.xml` | Step 6 |
+| **SonarCloud** | SAST and quality gate | Bugs, security hotspots, code smells, coverage thresholds | Step 7 |
+| **Docker Buildx** | Image build | A reproducible container image | Step 10 |
+| **Trivy (image)** | Container scan | OS and library CVEs inside the image | Steps 11 and 12 |
+| **Amazon ECR** | Registry and scan on push | Private image storage and an extra vulnerability scan | Steps 14 and 15 |
+| **GitHub Actions** | CI orchestration | Runs every step in order, with gates and artifacts | Whole pipeline |
+| **GitHub PAT** | Cross-repo access | Lets the CI repo trigger the CD repo | Step 17 |
+| **Argo CD** | GitOps CD | Keeps the cluster in line with Git. Auto-sync and self-heal | Step 19 |
+
+### 🎯 Interview talking points
+
+- **Shift left:** secrets, dependencies and code are checked **before** the image is built.
+- **Build once, deploy many:** one image (`fb-` or `rel-` tag) is built once and promoted through environments. The image is not rebuilt for each one.
+- **Traceability:** each tag includes the run number and short commit ID, and the image carries the commit SHA as a label.
+- **Separation of CI and CD:** GitHub Actions builds and scans. Argo CD deploys from Git. The cluster never gets manual changes.
+- **Defence in depth:** Gitleaks, Trivy (dependencies), SonarCloud (code), Trivy (image) and ECR scan-on-push each look at a different layer.
+- **Honest gaps:** the Trivy image gate is temporarily non-blocking, and the workflow builds with JDK 21 while the project targets Java 17. Both are known and listed for follow-up.
+
 ## 🗺️ Pipeline at a Glance
 
 ![CI/CD trunk-based flow](docs/diagrams/cicd-trunk-flow.svg)
