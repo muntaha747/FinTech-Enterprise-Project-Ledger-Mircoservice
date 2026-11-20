@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 600" width="1100" height="600" role="img" aria-label="10 · Step 11: ECR Login, Push and Scan Report">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0f9ff"/><stop offset="1" stop-color="#fdf4ff"/></linearGradient>
+    <style>
+      .title { font: 700 26px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .sub { font: 400 14px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+      .h { font: 700 15px 'Segoe UI', Arial, sans-serif; fill: #ffffff; }
+      .t { font: 400 12.5px 'Segoe UI', Arial, sans-serif; fill: #f8fafc; }
+      .num { font: 700 13px 'Segoe UI', Arial, sans-serif; }
+      .lbl { font: 600 12px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .note { font: 600 13px 'Segoe UI', Arial, sans-serif; }
+      .foot { font: 400 13px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+      .arrow { fill: none; stroke-width: 2.5; stroke-dasharray: 7 6; animation: flow 1s linear infinite; }
+      .box { stroke: #ffffff; stroke-width: 2; animation: breathe 3s ease-in-out infinite; }
+      @keyframes flow { to { stroke-dashoffset: -26; } }
+      @keyframes breathe { 0%,100% { stroke-opacity: .35; } 50% { stroke-opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) { .arrow, .box { animation: none; } }
+    </style>
+    <marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#0f172a" flood-opacity=".22"/>
+    </filter>
+  </defs>
+  <rect width="1100" height="600" fill="url(#bg)"/>
+  <text x="550.0" y="38" text-anchor="middle" class="title">10 · Step 11: ECR Login, Push and Scan Report</text>
+  <text x="550.0" y="62" text-anchor="middle" class="sub">The image goes to a private Amazon ECR registry, which scans it again on push</text>
+  <g filter="url(#shadow)"><rect class="box" x="40" y="220" width="220" height="140" rx="14" fill="#475569" style="animation-delay:0.25s"/></g>
+<text x="54" y="246" class="h">AWS credentials</text>
+<text x="54" y="268" class="t">AWS_ACCESS_KEY_ID</text>
+<text x="54" y="286" class="t">AWS_SECRET_ACCESS_KEY</text>
+<text x="54" y="304" class="t">from GitHub secrets</text>
+<g filter="url(#shadow)"><rect class="box" x="290" y="220" width="220" height="140" rx="14" fill="#ea580c" style="animation-delay:0.50s"/></g>
+<text x="304" y="246" class="h">ECR login</text>
+<text x="304" y="268" class="t">aws-actions/amazon-ecr-login</text>
+<text x="304" y="286" class="t">temporary Docker token</text>
+<text x="304" y="304" class="t">us-east-1</text>
+<g filter="url(#shadow)"><rect class="box" x="540" y="220" width="220" height="140" rx="14" fill="#2563eb" style="animation-delay:0.75s"/></g>
+<text x="554" y="246" class="h">11 · Push image</text>
+<text x="554" y="268" class="t">docker push</text>
+<text x="554" y="286" class="t">fintech-ledgerservice:tag</text>
+<text x="554" y="304" class="t">to Amazon ECR</text>
+<circle cx="742" cy="238" r="14" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+<text x="742" y="243" text-anchor="middle" class="num" fill="#2563eb">11</text>
+<g filter="url(#shadow)"><rect class="box" x="790" y="220" width="220" height="140" rx="14" fill="#0ea5e9" style="animation-delay:1.00s"/></g>
+<text x="804" y="246" class="h">Amazon ECR scan</text>
+<text x="804" y="268" class="t">scan on push enabled</text>
+<text x="804" y="286" class="t">CVE findings per image</text>
+<text x="804" y="304" class="t">second scan layer</text>
+<g filter="url(#shadow)"><rect class="box" x="790" y="410" width="220" height="130" rx="14" fill="#14b8a6" style="animation-delay:1.25s"/></g>
+<text x="804" y="436" class="h">Run summary</text>
+<text x="804" y="458" class="t">digest, size, push time</text>
+<text x="804" y="476" class="t">findings counts</text>
+<text x="804" y="494" class="t">GITHUB_STEP_SUMMARY</text>
+<g filter="url(#shadow)"><rect class="box" x="540" y="410" width="220" height="130" rx="14" fill="#8b5cf6" style="animation-delay:0.00s"/></g>
+<text x="554" y="436" class="h">Reports artifact</text>
+<text x="554" y="458" class="t">step 19 uploads reports/</text>
+<text x="554" y="476" class="t">ecr-image.json</text>
+<text x="554" y="494" class="t">ecr-scan.json</text>
+<path id="p0" class="arrow" d="M260.0,290.0 L290.0,290.0" stroke="#334155" marker-end="url(#head)"/>
+<path id="p1" class="arrow" d="M510.0,290.0 L540.0,290.0" stroke="#334155" marker-end="url(#head)"/>
+<path id="p2" class="arrow" d="M760.0,290.0 L790.0,290.0" stroke="#334155" marker-end="url(#head)"/>
+<path id="p3" class="arrow" d="M900.0,360.0 L900.0,410.0" stroke="#14b8a6" marker-end="url(#head)"/>
+<path id="p4" class="arrow" d="M790.0,475.0 L760.0,475.0" stroke="#8b5cf6" marker-end="url(#head)"/>
+  <text x="550.0" y="556" text-anchor="middle" class="foot">AWS credentials come from GitHub secrets. The ECR login token expires after a short time.</text><text x="550.0" y="576" text-anchor="middle" class="foot">ECR scan-on-push is a second, independent scan. The report is saved and summarised.</text><text x="550.0" y="596" text-anchor="middle" class="foot">The push step has no continue-on-error, so a failed push fails the run.</text>
+  <circle r="5.5" fill="#334155" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.0s"><mpath href="#p0"/></animateMotion></circle>
+<circle r="5.5" fill="#334155" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.5s"><mpath href="#p1"/></animateMotion></circle>
+<circle r="5.5" fill="#334155" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="1.0s"><mpath href="#p2"/></animateMotion></circle>
+<circle r="5.5" fill="#14b8a6" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="1.5s"><mpath href="#p3"/></animateMotion></circle>
+<circle r="5.5" fill="#8b5cf6" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="2.0s"><mpath href="#p4"/></animateMotion></circle>
+</svg>

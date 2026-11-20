@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 600" width="1100" height="600" role="img" aria-label="05 · Step 4: JaCoCo Code Coverage">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0f9ff"/><stop offset="1" stop-color="#fdf4ff"/></linearGradient>
+    <style>
+      .title { font: 700 26px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .sub { font: 400 14px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+      .h { font: 700 15px 'Segoe UI', Arial, sans-serif; fill: #ffffff; }
+      .t { font: 400 12.5px 'Segoe UI', Arial, sans-serif; fill: #f8fafc; }
+      .num { font: 700 13px 'Segoe UI', Arial, sans-serif; }
+      .lbl { font: 600 12px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .note { font: 600 13px 'Segoe UI', Arial, sans-serif; }
+      .foot { font: 400 13px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+      .arrow { fill: none; stroke-width: 2.5; stroke-dasharray: 7 6; animation: flow 1s linear infinite; }
+      .box { stroke: #ffffff; stroke-width: 2; animation: breathe 3s ease-in-out infinite; }
+      @keyframes flow { to { stroke-dashoffset: -26; } }
+      @keyframes breathe { 0%,100% { stroke-opacity: .35; } 50% { stroke-opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) { .arrow, .box { animation: none; } }
+    </style>
+    <marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#0f172a" flood-opacity=".22"/>
+    </filter>
+  </defs>
+  <rect width="1100" height="600" fill="url(#bg)"/>
+  <text x="550.0" y="38" text-anchor="middle" class="title">05 · Step 4: JaCoCo Code Coverage</text>
+  <text x="550.0" y="62" text-anchor="middle" class="sub">JaCoCo measures how much of the code the tests really run</text>
+  <g filter="url(#shadow)"><rect class="box" x="40" y="220" width="220" height="140" rx="14" fill="#16a34a" style="animation-delay:0.25s"/></g>
+<text x="54" y="246" class="h">Unit + IT tests</text>
+<text x="54" y="268" class="t">run by mvn verify</text>
+<text x="54" y="286" class="t">from step 3</text>
+<text x="54" y="304" class="t">JUnit 5</text>
+<circle cx="242" cy="238" r="14" fill="#ffffff" stroke="#16a34a" stroke-width="2"/>
+<text x="242" y="243" text-anchor="middle" class="num" fill="#16a34a">3</text>
+<g filter="url(#shadow)"><rect class="box" x="290" y="220" width="220" height="140" rx="14" fill="#14b8a6" style="animation-delay:0.50s"/></g>
+<text x="304" y="246" class="h">JaCoCo agent</text>
+<text x="304" y="268" class="t">attached during tests</text>
+<text x="304" y="286" class="t">records executed lines</text>
+<text x="304" y="304" class="t">writes jacoco.exec</text>
+<circle cx="492" cy="238" r="14" fill="#ffffff" stroke="#14b8a6" stroke-width="2"/>
+<text x="492" y="243" text-anchor="middle" class="num" fill="#14b8a6">4</text>
+<g filter="url(#shadow)"><rect class="box" x="540" y="220" width="220" height="140" rx="14" fill="#6366f1" style="animation-delay:0.75s"/></g>
+<text x="554" y="246" class="h">JaCoCo report</text>
+<text x="554" y="268" class="t">HTML for humans</text>
+<text x="554" y="286" class="t">XML for SonarCloud</text>
+<text x="554" y="304" class="t">target/site/jacoco</text>
+<g filter="url(#shadow)"><rect class="box" x="790" y="220" width="220" height="140" rx="14" fill="#8b5cf6" style="animation-delay:1.00s"/></g>
+<text x="804" y="246" class="h">Upload artifact</text>
+<text x="804" y="268" class="t">actions/upload-artifact@v4</text>
+<text x="804" y="286" class="t">name: jacoco-report</text>
+<text x="804" y="304" class="t">downloadable from the run</text>
+<g filter="url(#shadow)"><rect class="box" x="540" y="410" width="220" height="130" rx="14" fill="#ec4899" style="animation-delay:1.25s"/></g>
+<text x="554" y="436" class="h">SonarCloud</text>
+<text x="554" y="458" class="t">reads jacoco.xml</text>
+<text x="554" y="476" class="t">shows coverage %</text>
+<circle cx="742" cy="428" r="14" fill="#ffffff" stroke="#ec4899" stroke-width="2"/>
+<text x="742" y="433" text-anchor="middle" class="num" fill="#ec4899">7</text>
+<g filter="url(#shadow)"><rect class="box" x="290" y="410" width="220" height="130" rx="14" fill="#f59e0b" style="animation-delay:0.00s"/></g>
+<text x="304" y="436" class="h">Coverage on dashboard</text>
+<text x="304" y="458" class="t">line and branch %</text>
+<text x="304" y="476" class="t">trend over time</text>
+<path id="p0" class="arrow" d="M260.0,290.0 L290.0,290.0" stroke="#334155" marker-end="url(#head)"/>
+<path id="p1" class="arrow" d="M510.0,290.0 L540.0,290.0" stroke="#334155" marker-end="url(#head)"/>
+<path id="p2" class="arrow" d="M760.0,290.0 L790.0,290.0" stroke="#334155" marker-end="url(#head)"/>
+<path id="p3" class="arrow" d="M650.0,360.0 L650.0,410.0" stroke="#ec4899" marker-end="url(#head)"/>
+<text x="650.0" y="377.0" text-anchor="middle" class="lbl">jacoco.xml</text>
+<path id="p4" class="arrow" d="M540.0,475.0 L510.0,475.0" stroke="#f59e0b" marker-end="url(#head)"/>
+  <text x="550.0" y="556" text-anchor="middle" class="foot">JaCoCo records which lines ran during the tests and writes reports under target/site/jacoco.</text><text x="550.0" y="576" text-anchor="middle" class="foot">The report is uploaded as the jacoco-report artifact so reviewers can download it.</text><text x="550.0" y="596" text-anchor="middle" class="foot">SonarCloud reads jacoco.xml to show coverage on the dashboard.</text>
+  <circle r="5.5" fill="#334155" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.0s"><mpath href="#p0"/></animateMotion></circle>
+<circle r="5.5" fill="#334155" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.5s"><mpath href="#p1"/></animateMotion></circle>
+<circle r="5.5" fill="#334155" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="1.0s"><mpath href="#p2"/></animateMotion></circle>
+<circle r="5.5" fill="#ec4899" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="1.5s"><mpath href="#p3"/></animateMotion></circle>
+<circle r="5.5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="2.0s"><mpath href="#p4"/></animateMotion></circle>
+</svg>

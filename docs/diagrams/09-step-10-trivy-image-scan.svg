@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 600" width="1100" height="600" role="img" aria-label="09 · Step 10: Trivy Image Scan">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0f9ff"/><stop offset="1" stop-color="#fdf4ff"/></linearGradient>
+    <style>
+      .title { font: 700 26px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .sub { font: 400 14px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+      .h { font: 700 15px 'Segoe UI', Arial, sans-serif; fill: #ffffff; }
+      .t { font: 400 12.5px 'Segoe UI', Arial, sans-serif; fill: #f8fafc; }
+      .num { font: 700 13px 'Segoe UI', Arial, sans-serif; }
+      .lbl { font: 600 12px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .note { font: 600 13px 'Segoe UI', Arial, sans-serif; }
+      .foot { font: 400 13px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+      .arrow { fill: none; stroke-width: 2.5; stroke-dasharray: 7 6; animation: flow 1s linear infinite; }
+      .box { stroke: #ffffff; stroke-width: 2; animation: breathe 3s ease-in-out infinite; }
+      @keyframes flow { to { stroke-dashoffset: -26; } }
+      @keyframes breathe { 0%,100% { stroke-opacity: .35; } 50% { stroke-opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) { .arrow, .box { animation: none; } }
+    </style>
+    <marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#0f172a" flood-opacity=".22"/>
+    </filter>
+  </defs>
+  <rect width="1100" height="600" fill="url(#bg)"/>
+  <text x="550.0" y="38" text-anchor="middle" class="title">09 · Step 10: Trivy Image Scan</text>
+  <text x="550.0" y="62" text-anchor="middle" class="sub">The built image is scanned for OS and library CVEs before it is pushed</text>
+  <g filter="url(#shadow)"><rect class="box" x="40" y="220" width="220" height="140" rx="14" fill="#c026d3" style="animation-delay:0.25s"/></g>
+<text x="54" y="246" class="h">Local image</text>
+<text x="54" y="268" class="t">built in step 9</text>
+<text x="54" y="286" class="t">not pushed yet</text>
+<text x="54" y="304" class="t">tag fb- or rel-</text>
+<g filter="url(#shadow)"><rect class="box" x="290" y="220" width="220" height="140" rx="14" fill="#65a30d" style="animation-delay:0.50s"/></g>
+<text x="304" y="246" class="h">10 · Trivy full scan</text>
+<text x="304" y="268" class="t">aquasec/trivy:0.50.0</text>
+<text x="304" y="286" class="t">image --format json</text>
+<text x="304" y="304" class="t">never blocks</text>
+<circle cx="492" cy="238" r="14" fill="#ffffff" stroke="#65a30d" stroke-width="2"/>
+<text x="492" y="243" text-anchor="middle" class="num" fill="#65a30d">10</text>
+<g filter="url(#shadow)"><rect class="box" x="540" y="220" width="220" height="140" rx="14" fill="#f59e0b" style="animation-delay:0.75s"/></g>
+<text x="554" y="246" class="h">trivy-image.json</text>
+<text x="554" y="268" class="t">all CVEs found</text>
+<text x="554" y="286" class="t">severity + fix version</text>
+<text x="554" y="304" class="t">uploaded as artifact</text>
+<g filter="url(#shadow)"><rect class="box" x="290" y="410" width="220" height="130" rx="14" fill="#e11d48" style="animation-delay:1.00s"/></g>
+<text x="304" y="436" class="h">Fixable CRITICAL gate</text>
+<text x="304" y="458" class="t">--severity CRITICAL</text>
+<text x="304" y="476" class="t">--ignore-unfixed</text>
+<text x="304" y="494" class="t">--exit-code 1</text>
+<g filter="url(#shadow)"><rect class="box" x="540" y="410" width="220" height="130" rx="14" fill="#ea580c" style="animation-delay:1.25s"/></g>
+<text x="554" y="436" class="h">Gate status</text>
+<text x="554" y="458" class="t">continue-on-error: true</text>
+<text x="554" y="476" class="t">temporarily non-blocking</text>
+<text x="554" y="494" class="t">remove after fixes</text>
+<g filter="url(#shadow)"><rect class="box" x="790" y="220" width="220" height="140" rx="14" fill="#475569" style="animation-delay:0.00s"/></g>
+<text x="804" y="246" class="h">Mounts</text>
+<text x="804" y="268" class="t">/var/run/docker.sock</text>
+<text x="804" y="286" class="t">$HOME/.cache/trivy</text>
+<text x="804" y="304" class="t">workspace /repo</text>
+<path id="p0" class="arrow" d="M260.0,290.0 L290.0,290.0" stroke="#334155" marker-end="url(#head)"/>
+<path id="p1" class="arrow" d="M510.0,290.0 L540.0,290.0" stroke="#334155" marker-end="url(#head)"/>
+<path id="p2" class="arrow" d="M790.0,290.0 L760.0,290.0" stroke="#64748b" marker-end="url(#head)"/>
+<path id="p3" class="arrow" d="M150.0,360.0 L150.0,475.0 L290.0,475.0" stroke="#e11d48" marker-end="url(#head)"/>
+<text x="200.0" y="500.0" text-anchor="middle" class="lbl">then gate</text>
+<path id="p4" class="arrow" d="M510.0,475.0 L540.0,475.0" stroke="#f97316" marker-end="url(#head)"/>
+  <text x="550.0" y="556" text-anchor="middle" class="foot">Trivy reads the local image through the Docker socket and the Trivy DB cache.</text><text x="550.0" y="576" text-anchor="middle" class="foot">The full report never blocks. The gate fails only on fixable CRITICAL CVEs, and is temporarily non-blocking.</text><text x="550.0" y="596" text-anchor="middle" class="foot">Fix the base image and Spring Boot first, then make the gate blocking.</text>
+  <circle r="5.5" fill="#334155" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.0s"><mpath href="#p0"/></animateMotion></circle>
+<circle r="5.5" fill="#334155" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.5s"><mpath href="#p1"/></animateMotion></circle>
+<circle r="5.5" fill="#64748b" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="1.0s"><mpath href="#p2"/></animateMotion></circle>
+<circle r="5.5" fill="#e11d48" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="1.5s"><mpath href="#p3"/></animateMotion></circle>
+<circle r="5.5" fill="#f97316" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="2.0s"><mpath href="#p4"/></animateMotion></circle>
+</svg>
