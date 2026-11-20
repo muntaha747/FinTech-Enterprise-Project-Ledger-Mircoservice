@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 700" width="1100" height="700" role="img" aria-label="01 · Branch Lifecycle: feature → PR → main">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0f9ff"/><stop offset="1" stop-color="#fdf4ff"/></linearGradient>
+    <style>
+      .title { font: 700 26px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .sub { font: 400 14px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+      .h { font: 700 15px 'Segoe UI', Arial, sans-serif; fill: #ffffff; }
+      .t { font: 400 12.5px 'Segoe UI', Arial, sans-serif; fill: #f8fafc; }
+      .num { font: 700 13px 'Segoe UI', Arial, sans-serif; }
+      .lbl { font: 600 12px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .note { font: 600 13px 'Segoe UI', Arial, sans-serif; }
+      .foot { font: 400 13px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+      .arrow { fill: none; stroke-width: 2.5; stroke-dasharray: 7 6; animation: flow 1s linear infinite; }
+      .box { stroke: #ffffff; stroke-width: 2; animation: breathe 3s ease-in-out infinite; }
+      @keyframes flow { to { stroke-dashoffset: -26; } }
+      @keyframes breathe { 0%,100% { stroke-opacity: .35; } 50% { stroke-opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) { .arrow, .box { animation: none; } }
+    </style>
+    <marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#0f172a" flood-opacity=".22"/>
+    </filter>
+  </defs>
+  <rect width="1100" height="700" fill="url(#bg)"/>
+  <text x="550.0" y="38" text-anchor="middle" class="title">01 · Branch Lifecycle: feature → PR → main</text>
+  <text x="550.0" y="62" text-anchor="middle" class="sub">Read from the bottom up: feature first, then the pull request, then main</text>
+  <g filter="url(#shadow)"><rect class="box" x="360" y="90" width="380" height="130" rx="14" fill="#16a34a" style="animation-delay:0.25s"/></g>
+<text x="374" y="116" class="h">main (trunk)</text>
+<text x="374" y="138" class="t">PR merged → full pipeline runs again</text>
+<text x="374" y="156" class="t">Tag: rel-&lt;run&gt;-&lt;sha8&gt;</text>
+<text x="374" y="174" class="t">Deploys: regression + integration</text>
+<circle cx="722" cy="108" r="14" fill="#ffffff" stroke="#16a34a" stroke-width="2"/>
+<text x="722" y="113" text-anchor="middle" class="num" fill="#16a34a">3</text>
+<g filter="url(#shadow)"><rect class="box" x="360" y="285" width="380" height="130" rx="14" fill="#2563eb" style="animation-delay:0.50s"/></g>
+<text x="374" y="311" class="h">Pull request #N  (feature → main)</text>
+<text x="374" y="333" class="t">Pipeline runs on every open / update</text>
+<text x="374" y="351" class="t">Deploys: functional (PR open / update)</text>
+<text x="374" y="369" class="t">Closed without merge → pipeline skipped</text>
+<circle cx="722" cy="303" r="14" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+<text x="722" y="308" text-anchor="middle" class="num" fill="#2563eb">2</text>
+<g filter="url(#shadow)"><rect class="box" x="360" y="480" width="380" height="130" rx="14" fill="#8b5cf6" style="animation-delay:0.75s"/></g>
+<text x="374" y="506" class="h">feature branch</text>
+<text x="374" y="528" class="t">git push origin feature</text>
+<text x="374" y="546" class="t">Pipeline runs on push to feature</text>
+<text x="374" y="564" class="t">Tag: fb-&lt;run&gt;-&lt;sha8&gt; → functional</text>
+<circle cx="722" cy="498" r="14" fill="#ffffff" stroke="#8b5cf6" stroke-width="2"/>
+<text x="722" y="503" text-anchor="middle" class="num" fill="#8b5cf6">1</text>
+<g filter="url(#shadow)"><rect class="box" x="40" y="480" width="240" height="130" rx="14" fill="#475569" style="animation-delay:1.00s"/></g>
+<text x="54" y="506" class="h">Developer</text>
+<text x="54" y="528" class="t">writes code</text>
+<text x="54" y="546" class="t">pushes to feature</text>
+<g filter="url(#shadow)"><rect class="box" x="40" y="285" width="240" height="130" rx="14" fill="#0ea5e9" style="animation-delay:1.25s"/></g>
+<text x="54" y="311" class="h">Reviewer / QA</text>
+<text x="54" y="333" class="t">reviews the pull request</text>
+<text x="54" y="351" class="t">merges when checks pass</text>
+<g filter="url(#shadow)"><rect class="box" x="40" y="90" width="240" height="130" rx="14" fill="#14b8a6" style="animation-delay:0.00s"/></g>
+<text x="54" y="116" class="h">GitHub Actions</text>
+<text x="54" y="138" class="t">same 12 steps on every run</text>
+<text x="54" y="156" class="t">defined in ledgerbuild.yml</text>
+<g filter="url(#shadow)"><rect class="box" x="820" y="480" width="240" height="130" rx="14" fill="#f59e0b" style="animation-delay:0.25s"/></g>
+<text x="834" y="506" class="h">Functional env</text>
+<text x="834" y="528" class="t">fb- image</text>
+<text x="834" y="546" class="t">functional tests</text>
+<g filter="url(#shadow)"><rect class="box" x="820" y="285" width="240" height="130" rx="14" fill="#f59e0b" style="animation-delay:0.50s"/></g>
+<text x="834" y="311" class="h">Functional (PR)</text>
+<text x="834" y="333" class="t">same fb- build flow</text>
+<text x="834" y="351" class="t">results shown on the PR</text>
+<g filter="url(#shadow)"><rect class="box" x="820" y="90" width="240" height="130" rx="14" fill="#ec4899" style="animation-delay:0.75s"/></g>
+<text x="834" y="116" class="h">Regression + Integration</text>
+<text x="834" y="138" class="t">rel- image</text>
+<text x="834" y="156" class="t">after a successful merge</text>
+<path id="p0" class="arrow" d="M280.0,545.0 L360.0,545.0" stroke="#64748b" marker-end="url(#head)"/>
+<text x="325.0" y="528.0" text-anchor="middle" class="lbl">1 · push</text>
+<path id="p1" class="arrow" d="M550.0,480.0 L550.0,415.0" stroke="#2563eb" marker-end="url(#head)"/>
+<text x="612.0" y="452.0" text-anchor="middle" class="lbl">2 · open PR</text>
+<path id="p2" class="arrow" d="M550.0,285.0 L550.0,220.0" stroke="#16a34a" marker-end="url(#head)"/>
+<text x="612.0" y="258.0" text-anchor="middle" class="lbl">3 · merge PR</text>
+<path id="p3" class="arrow" d="M280.0,350.0 L360.0,350.0" stroke="#0ea5e9" marker-end="url(#head)"/>
+<text x="330.0" y="340.0" text-anchor="middle" class="lbl">review</text>
+<path id="p4" class="arrow" d="M280.0,155.0 L360.0,155.0" stroke="#14b8a6" marker-end="url(#head)"/>
+<text x="330.0" y="128.0" text-anchor="middle" class="lbl">runs</text>
+<path id="p5" class="arrow" d="M740.0,545.0 L820.0,545.0" stroke="#f59e0b" marker-end="url(#head)"/>
+<text x="780.0" y="532.0" text-anchor="middle" class="lbl">fb-</text>
+<path id="p6" class="arrow" d="M740.0,350.0 L820.0,350.0" stroke="#f59e0b" marker-end="url(#head)"/>
+<text x="780.0" y="340.0" text-anchor="middle" class="lbl">PR</text>
+<path id="p7" class="arrow" d="M740.0,155.0 L820.0,155.0" stroke="#ec4899" marker-end="url(#head)"/>
+<text x="780.0" y="128.0" text-anchor="middle" class="lbl">rel-</text>
+  <text x="550.0" y="656" text-anchor="middle" class="foot">Feature push runs the pipeline and deploys to Functional (fb- tag)</text><text x="550.0" y="676" text-anchor="middle" class="foot">Opening or updating the PR runs it again and deploys to Functional</text><text x="550.0" y="696" text-anchor="middle" class="foot">Merging the PR runs the same steps on main and deploys to Regression + Integration (rel- tag)</text>
+  <circle r="5.5" fill="#64748b" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.0s"><mpath href="#p0"/></animateMotion></circle>
+<circle r="5.5" fill="#2563eb" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.5s"><mpath href="#p1"/></animateMotion></circle>
+<circle r="5.5" fill="#16a34a" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="1.0s"><mpath href="#p2"/></animateMotion></circle>
+<circle r="5.5" fill="#0ea5e9" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="1.5s"><mpath href="#p3"/></animateMotion></circle>
+<circle r="5.5" fill="#14b8a6" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="2.0s"><mpath href="#p4"/></animateMotion></circle>
+<circle r="5.5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.0s"><mpath href="#p5"/></animateMotion></circle>
+<circle r="5.5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.5s"><mpath href="#p6"/></animateMotion></circle>
+<circle r="5.5" fill="#ec4899" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="1.0s"><mpath href="#p7"/></animateMotion></circle>
+</svg>

@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 640" width="1100" height="640" role="img" aria-label="04 · Step 3: Build, Unit and Integration Tests">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0f9ff"/><stop offset="1" stop-color="#fdf4ff"/></linearGradient>
+    <style>
+      .title { font: 700 26px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .sub { font: 400 14px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+      .h { font: 700 15px 'Segoe UI', Arial, sans-serif; fill: #ffffff; }
+      .t { font: 400 12.5px 'Segoe UI', Arial, sans-serif; fill: #f8fafc; }
+      .num { font: 700 13px 'Segoe UI', Arial, sans-serif; }
+      .lbl { font: 600 12px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .note { font: 600 13px 'Segoe UI', Arial, sans-serif; }
+      .foot { font: 400 13px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+      .arrow { fill: none; stroke-width: 2.5; stroke-dasharray: 7 6; animation: flow 1s linear infinite; }
+      .box { stroke: #ffffff; stroke-width: 2; animation: breathe 3s ease-in-out infinite; }
+      @keyframes flow { to { stroke-dashoffset: -26; } }
+      @keyframes breathe { 0%,100% { stroke-opacity: .35; } 50% { stroke-opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) { .arrow, .box { animation: none; } }
+    </style>
+    <marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#0f172a" flood-opacity=".22"/>
+    </filter>
+  </defs>
+  <rect width="1100" height="640" fill="url(#bg)"/>
+  <text x="550.0" y="38" text-anchor="middle" class="title">04 · Step 3: Build, Unit and Integration Tests</text>
+  <text x="550.0" y="62" text-anchor="middle" class="sub">Maven compiles the Java code, runs every test and packages the Spring Boot jar</text>
+  <g filter="url(#shadow)"><rect class="box" x="25" y="200" width="150" height="150" rx="14" fill="#475569" style="animation-delay:0.25s"/></g>
+<text x="39" y="226" class="h">Source code</text>
+<text x="39" y="248" class="t">src/main/java</text>
+<text x="39" y="266" class="t">Spring Boot 3.1.2</text>
+<text x="39" y="284" class="t">Java 17 code</text>
+<g filter="url(#shadow)"><rect class="box" x="205" y="200" width="150" height="150" rx="14" fill="#6366f1" style="animation-delay:0.50s"/></g>
+<text x="219" y="226" class="h">Setup Java 21</text>
+<text x="219" y="248" class="t">Temurin JDK 21</text>
+<text x="219" y="266" class="t">cache: maven</text>
+<text x="219" y="284" class="t">setup-java@v4</text>
+<g filter="url(#shadow)"><rect class="box" x="385" y="200" width="150" height="150" rx="14" fill="#0ea5e9" style="animation-delay:0.75s"/></g>
+<text x="399" y="226" class="h">Docker API</text>
+<text x="399" y="248" class="t">api.version=1.44</text>
+<text x="399" y="266" class="t">for Testcontainers</text>
+<text x="399" y="284" class="t">talk to Docker</text>
+<g filter="url(#shadow)"><rect class="box" x="565" y="200" width="150" height="150" rx="14" fill="#16a34a" style="animation-delay:1.00s"/></g>
+<text x="579" y="226" class="h">Maven compile</text>
+<text x="579" y="248" class="t">mvn clean verify</text>
+<text x="579" y="266" class="t">compiles main code</text>
+<text x="579" y="284" class="t">resolves pom.xml</text>
+<g filter="url(#shadow)"><rect class="box" x="745" y="200" width="150" height="150" rx="14" fill="#14b8a6" style="animation-delay:1.25s"/></g>
+<text x="759" y="226" class="h">Unit tests</text>
+<text x="759" y="248" class="t">JUnit 5 + Spring</text>
+<text x="759" y="266" class="t">BookControllerTest</text>
+<text x="759" y="284" class="t">no database needed</text>
+<g filter="url(#shadow)"><rect class="box" x="925" y="200" width="150" height="150" rx="14" fill="#f59e0b" style="animation-delay:0.00s"/></g>
+<text x="939" y="226" class="h">Package JAR</text>
+<text x="939" y="248" class="t">Spring repackage</text>
+<text x="939" y="266" class="t">target/*.jar</text>
+<text x="939" y="284" class="t">→ next: JaCoCo</text>
+<path id="p0" class="arrow" d="M175.0,275.0 L205.0,275.0" stroke="#334155" marker-end="url(#head)"/>
+<path id="p1" class="arrow" d="M355.0,275.0 L385.0,275.0" stroke="#334155" marker-end="url(#head)"/>
+<path id="p2" class="arrow" d="M535.0,275.0 L565.0,275.0" stroke="#334155" marker-end="url(#head)"/>
+<path id="p3" class="arrow" d="M715.0,275.0 L745.0,275.0" stroke="#334155" marker-end="url(#head)"/>
+<path id="p4" class="arrow" d="M895.0,275.0 L925.0,275.0" stroke="#334155" marker-end="url(#head)"/>
+<g filter="url(#shadow)"><rect class="box" x="210" y="430" width="180" height="120" rx="14" fill="#65a30d" style="animation-delay:0.25s"/></g>
+<text x="224" y="456" class="h">Maven cache ~/.m2</text>
+<text x="224" y="478" class="t">restored by setup-java</text>
+<text x="224" y="496" class="t">faster repeat builds</text>
+<g filter="url(#shadow)"><rect class="box" x="610" y="430" width="260" height="120" rx="14" fill="#ec4899" style="animation-delay:0.50s"/></g>
+<text x="624" y="456" class="h">Testcontainers MySQL</text>
+<text x="624" y="478" class="t">real MySQL in Docker</text>
+<text x="624" y="496" class="t">started for integration tests</text>
+<text x="624" y="514" class="t">removed afterwards</text>
+<path id="p5" class="arrow" d="M280.0,350.0 L300.0,430.0" stroke="#65a30d" marker-end="url(#head)"/>
+<path id="p6" class="arrow" d="M740.0,430.0 L820.0,350.0" stroke="#ec4899" marker-end="url(#head)"/>
+<text x="820.0" y="395.0" text-anchor="middle" class="lbl">DB for tests</text>
+  <text x="550.0" y="596" text-anchor="middle" class="foot">Testcontainers starts a real MySQL in Docker for integration tests, then removes it.</text><text x="550.0" y="616" text-anchor="middle" class="foot">Maven cache (~/.m2) is restored by setup-java to speed up later runs.</text><text x="550.0" y="636" text-anchor="middle" class="foot">Any failing test stops the job here, before any image is built.</text>
+  <circle r="5.5" fill="#334155" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.0s"><mpath href="#p0"/></animateMotion></circle>
+<circle r="5.5" fill="#334155" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.5s"><mpath href="#p1"/></animateMotion></circle>
+<circle r="5.5" fill="#334155" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="1.0s"><mpath href="#p2"/></animateMotion></circle>
+<circle r="5.5" fill="#334155" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="1.5s"><mpath href="#p3"/></animateMotion></circle>
+<circle r="5.5" fill="#334155" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="2.0s"><mpath href="#p4"/></animateMotion></circle>
+<circle r="5.5" fill="#65a30d" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.0s"><mpath href="#p5"/></animateMotion></circle>
+<circle r="5.5" fill="#ec4899" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.5s"><mpath href="#p6"/></animateMotion></circle>
+</svg>

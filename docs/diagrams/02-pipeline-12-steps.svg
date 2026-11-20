@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 740" width="1100" height="740" role="img" aria-label="02 · The 12-Step CI/CD Pipeline">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0f9ff"/><stop offset="1" stop-color="#fdf4ff"/></linearGradient>
+    <style>
+      .title { font: 700 26px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .sub { font: 400 14px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+      .h { font: 700 15px 'Segoe UI', Arial, sans-serif; fill: #ffffff; }
+      .t { font: 400 12.5px 'Segoe UI', Arial, sans-serif; fill: #f8fafc; }
+      .num { font: 700 13px 'Segoe UI', Arial, sans-serif; }
+      .lbl { font: 600 12px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .note { font: 600 13px 'Segoe UI', Arial, sans-serif; }
+      .foot { font: 400 13px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+      .arrow { fill: none; stroke-width: 2.5; stroke-dasharray: 7 6; animation: flow 1s linear infinite; }
+      .box { stroke: #ffffff; stroke-width: 2; animation: breathe 3s ease-in-out infinite; }
+      @keyframes flow { to { stroke-dashoffset: -26; } }
+      @keyframes breathe { 0%,100% { stroke-opacity: .35; } 50% { stroke-opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) { .arrow, .box { animation: none; } }
+    </style>
+    <marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#0f172a" flood-opacity=".22"/>
+    </filter>
+  </defs>
+  <rect width="1100" height="740" fill="url(#bg)"/>
+  <text x="550.0" y="38" text-anchor="middle" class="title">02 · The 12-Step CI/CD Pipeline</text>
+  <text x="550.0" y="62" text-anchor="middle" class="sub">Every push, PR and merge runs these steps in this order</text>
+  <g filter="url(#shadow)"><rect class="box" x="50" y="100" width="220" height="150" rx="14" fill="#6366f1" style="animation-delay:0.25s"/></g>
+<text x="64" y="126" class="h">Checkout the repo</text>
+<text x="64" y="148" class="t">actions/checkout@v4</text>
+<text x="64" y="166" class="t">full Git history</text>
+<text x="64" y="184" class="t">fetch-depth: 0</text>
+<circle cx="252" cy="118" r="14" fill="#ffffff" stroke="#6366f1" stroke-width="2"/>
+<text x="252" y="123" text-anchor="middle" class="num" fill="#6366f1">1</text>
+<g filter="url(#shadow)"><rect class="box" x="310" y="100" width="220" height="150" rx="14" fill="#dc2626" style="animation-delay:0.50s"/></g>
+<text x="324" y="126" class="h">GitLeaks scan</text>
+<text x="324" y="148" class="t">finds passwords and keys</text>
+<text x="324" y="166" class="t">fails the build if found</text>
+<text x="324" y="184" class="t">gitleaks v8.21.2</text>
+<circle cx="512" cy="118" r="14" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+<text x="512" y="123" text-anchor="middle" class="num" fill="#dc2626">2</text>
+<g filter="url(#shadow)"><rect class="box" x="570" y="100" width="220" height="150" rx="14" fill="#16a34a" style="animation-delay:0.75s"/></g>
+<text x="584" y="126" class="h">Build + tests</text>
+<text x="584" y="148" class="t">mvn clean verify</text>
+<text x="584" y="166" class="t">JUnit 5 + Testcontainers</text>
+<text x="584" y="184" class="t">MySQL in a container</text>
+<circle cx="772" cy="118" r="14" fill="#ffffff" stroke="#16a34a" stroke-width="2"/>
+<text x="772" y="123" text-anchor="middle" class="num" fill="#16a34a">3</text>
+<g filter="url(#shadow)"><rect class="box" x="830" y="100" width="220" height="150" rx="14" fill="#14b8a6" style="animation-delay:1.00s"/></g>
+<text x="844" y="126" class="h">JaCoCo coverage</text>
+<text x="844" y="148" class="t">coverage report (XML/HTML)</text>
+<text x="844" y="166" class="t">uploaded as artifact</text>
+<text x="844" y="184" class="t">read by SonarCloud</text>
+<circle cx="1032" cy="118" r="14" fill="#ffffff" stroke="#14b8a6" stroke-width="2"/>
+<text x="1032" y="123" text-anchor="middle" class="num" fill="#14b8a6">4</text>
+<g filter="url(#shadow)"><rect class="box" x="830" y="290" width="220" height="150" rx="14" fill="#ea580c" style="animation-delay:1.25s"/></g>
+<text x="844" y="316" class="h">Trivy SCA scan</text>
+<text x="844" y="338" class="t">scans pom.xml for CVEs</text>
+<text x="844" y="356" class="t">JSON + SARIF output</text>
+<text x="844" y="374" class="t">report only today</text>
+<circle cx="1032" cy="308" r="14" fill="#ffffff" stroke="#ea580c" stroke-width="2"/>
+<text x="1032" y="313" text-anchor="middle" class="num" fill="#ea580c">5</text>
+<g filter="url(#shadow)"><rect class="box" x="570" y="290" width="220" height="150" rx="14" fill="#f59e0b" style="animation-delay:0.00s"/></g>
+<text x="584" y="316" class="h">Trivy quality gate</text>
+<text x="584" y="338" class="t">fixable CRITICAL → fail</text>
+<text x="584" y="356" class="t">on the built image</text>
+<text x="584" y="374" class="t">temporarily non-blocking</text>
+<circle cx="772" cy="308" r="14" fill="#ffffff" stroke="#f59e0b" stroke-width="2"/>
+<text x="772" y="313" text-anchor="middle" class="num" fill="#f59e0b">6</text>
+<g filter="url(#shadow)"><rect class="box" x="310" y="290" width="220" height="150" rx="14" fill="#8b5cf6" style="animation-delay:0.25s"/></g>
+<text x="324" y="316" class="h">SonarQube SAST</text>
+<text x="324" y="338" class="t">bugs, vulns, hotspots</text>
+<text x="324" y="356" class="t">imports Gitleaks + Trivy</text>
+<text x="324" y="374" class="t">SonarCloud</text>
+<circle cx="512" cy="308" r="14" fill="#ffffff" stroke="#8b5cf6" stroke-width="2"/>
+<text x="512" y="313" text-anchor="middle" class="num" fill="#8b5cf6">7</text>
+<g filter="url(#shadow)"><rect class="box" x="50" y="290" width="220" height="150" rx="14" fill="#ec4899" style="animation-delay:0.50s"/></g>
+<text x="64" y="316" class="h">Sonar quality gate</text>
+<text x="64" y="338" class="t">pass / fail rules</text>
+<text x="64" y="356" class="t">result on the dashboard</text>
+<text x="64" y="374" class="t">reported, not blocking</text>
+<circle cx="252" cy="308" r="14" fill="#ffffff" stroke="#ec4899" stroke-width="2"/>
+<text x="252" y="313" text-anchor="middle" class="num" fill="#ec4899">8</text>
+<g filter="url(#shadow)"><rect class="box" x="50" y="480" width="220" height="150" rx="14" fill="#0ea5e9" style="animation-delay:0.75s"/></g>
+<text x="64" y="506" class="h">Image build</text>
+<text x="64" y="528" class="t">Dockerfile + Buildx</text>
+<text x="64" y="546" class="t">Temurin 17 JRE image</text>
+<text x="64" y="564" class="t">non-root user</text>
+<circle cx="252" cy="498" r="14" fill="#ffffff" stroke="#0ea5e9" stroke-width="2"/>
+<text x="252" y="503" text-anchor="middle" class="num" fill="#0ea5e9">9</text>
+<g filter="url(#shadow)"><rect class="box" x="310" y="480" width="220" height="150" rx="14" fill="#65a30d" style="animation-delay:1.00s"/></g>
+<text x="324" y="506" class="h">Trivy image scan</text>
+<text x="324" y="528" class="t">OS + library CVEs</text>
+<text x="324" y="546" class="t">full JSON report</text>
+<text x="324" y="564" class="t">gate on CRITICAL</text>
+<circle cx="512" cy="498" r="14" fill="#ffffff" stroke="#65a30d" stroke-width="2"/>
+<text x="512" y="503" text-anchor="middle" class="num" fill="#65a30d">10</text>
+<g filter="url(#shadow)"><rect class="box" x="570" y="480" width="220" height="150" rx="14" fill="#2563eb" style="animation-delay:1.25s"/></g>
+<text x="584" y="506" class="h">ECR scan + push</text>
+<text x="584" y="528" class="t">login to Amazon ECR</text>
+<text x="584" y="546" class="t">push the image</text>
+<text x="584" y="564" class="t">scan-on-push report</text>
+<circle cx="772" cy="498" r="14" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+<text x="772" y="503" text-anchor="middle" class="num" fill="#2563eb">11</text>
+<g filter="url(#shadow)"><rect class="box" x="830" y="480" width="220" height="150" rx="14" fill="#c026d3" style="animation-delay:0.00s"/></g>
+<text x="844" y="506" class="h">Trigger CD by tag</text>
+<text x="844" y="528" class="t">fb → functional</text>
+<text x="844" y="546" class="t">rel → regression, integration</text>
+<text x="844" y="564" class="t">GitHub API dispatch</text>
+<circle cx="1032" cy="498" r="14" fill="#ffffff" stroke="#c026d3" stroke-width="2"/>
+<text x="1032" y="503" text-anchor="middle" class="num" fill="#c026d3">12</text>
+<path id="p0" class="arrow" d="M270.0,175.0 L310.0,175.0" stroke="#64748b" marker-end="url(#head)"/>
+<path id="p1" class="arrow" d="M530.0,175.0 L570.0,175.0" stroke="#64748b" marker-end="url(#head)"/>
+<path id="p2" class="arrow" d="M790.0,175.0 L830.0,175.0" stroke="#64748b" marker-end="url(#head)"/>
+<path id="p3" class="arrow" d="M940.0,250.0 L940.0,290.0" stroke="#64748b" marker-end="url(#head)"/>
+<path id="p4" class="arrow" d="M830.0,365.0 L790.0,365.0" stroke="#64748b" marker-end="url(#head)"/>
+<path id="p5" class="arrow" d="M570.0,365.0 L530.0,365.0" stroke="#64748b" marker-end="url(#head)"/>
+<path id="p6" class="arrow" d="M310.0,365.0 L270.0,365.0" stroke="#64748b" marker-end="url(#head)"/>
+<path id="p7" class="arrow" d="M160.0,440.0 L160.0,480.0" stroke="#64748b" marker-end="url(#head)"/>
+<path id="p8" class="arrow" d="M270.0,555.0 L310.0,555.0" stroke="#64748b" marker-end="url(#head)"/>
+<path id="p9" class="arrow" d="M530.0,555.0 L570.0,555.0" stroke="#64748b" marker-end="url(#head)"/>
+<path id="p10" class="arrow" d="M790.0,555.0 L830.0,555.0" stroke="#64748b" marker-end="url(#head)"/>
+  <text x="550.0" y="696" text-anchor="middle" class="foot">Steps 1–11 are CI (build, test, scan, push). Step 12 is CD (routing to environments).</text><text x="550.0" y="716" text-anchor="middle" class="foot">Gitleaks (2) fails the build on findings. Trivy image gate (6) is temporarily non-blocking.</text><text x="550.0" y="736" text-anchor="middle" class="foot">Full step-by-step detail with tool names is in the README.</text>
+  <circle r="5.5" fill="#64748b" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.0s"><mpath href="#p0"/></animateMotion></circle>
+<circle r="5.5" fill="#64748b" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.5s"><mpath href="#p1"/></animateMotion></circle>
+<circle r="5.5" fill="#64748b" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="1.0s"><mpath href="#p2"/></animateMotion></circle>
+<circle r="5.5" fill="#64748b" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="1.5s"><mpath href="#p3"/></animateMotion></circle>
+<circle r="5.5" fill="#64748b" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="2.0s"><mpath href="#p4"/></animateMotion></circle>
+<circle r="5.5" fill="#64748b" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.0s"><mpath href="#p5"/></animateMotion></circle>
+<circle r="5.5" fill="#64748b" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.5s"><mpath href="#p6"/></animateMotion></circle>
+<circle r="5.5" fill="#64748b" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="1.0s"><mpath href="#p7"/></animateMotion></circle>
+<circle r="5.5" fill="#64748b" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="1.5s"><mpath href="#p8"/></animateMotion></circle>
+<circle r="5.5" fill="#64748b" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="2.0s"><mpath href="#p9"/></animateMotion></circle>
+<circle r="5.5" fill="#64748b" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.0s"><mpath href="#p10"/></animateMotion></circle>
+</svg>

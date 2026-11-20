@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 640" width="1100" height="640" role="img" aria-label="03 · Steps 1–2: Checkout and GitLeaks Secret Scan">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0f9ff"/><stop offset="1" stop-color="#fdf4ff"/></linearGradient>
+    <style>
+      .title { font: 700 26px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .sub { font: 400 14px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+      .h { font: 700 15px 'Segoe UI', Arial, sans-serif; fill: #ffffff; }
+      .t { font: 400 12.5px 'Segoe UI', Arial, sans-serif; fill: #f8fafc; }
+      .num { font: 700 13px 'Segoe UI', Arial, sans-serif; }
+      .lbl { font: 600 12px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .note { font: 600 13px 'Segoe UI', Arial, sans-serif; }
+      .foot { font: 400 13px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+      .arrow { fill: none; stroke-width: 2.5; stroke-dasharray: 7 6; animation: flow 1s linear infinite; }
+      .box { stroke: #ffffff; stroke-width: 2; animation: breathe 3s ease-in-out infinite; }
+      @keyframes flow { to { stroke-dashoffset: -26; } }
+      @keyframes breathe { 0%,100% { stroke-opacity: .35; } 50% { stroke-opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) { .arrow, .box { animation: none; } }
+    </style>
+    <marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#0f172a" flood-opacity=".22"/>
+    </filter>
+  </defs>
+  <rect width="1100" height="640" fill="url(#bg)"/>
+  <text x="550.0" y="38" text-anchor="middle" class="title">03 · Steps 1–2: Checkout and GitLeaks Secret Scan</text>
+  <text x="550.0" y="62" text-anchor="middle" class="sub">The first gate: no secret gets past this point</text>
+  <g filter="url(#shadow)"><rect class="box" x="50" y="200" width="220" height="130" rx="14" fill="#475569" style="animation-delay:0.25s"/></g>
+<text x="64" y="226" class="h">git push (feature)</text>
+<text x="64" y="248" class="t">developer pushes code</text>
+<text x="64" y="266" class="t">or PR event fires</text>
+<g filter="url(#shadow)"><rect class="box" x="310" y="200" width="220" height="130" rx="14" fill="#6366f1" style="animation-delay:0.50s"/></g>
+<text x="324" y="226" class="h">1 · Checkout</text>
+<text x="324" y="248" class="t">actions/checkout@v4</text>
+<text x="324" y="266" class="t">fetch-depth 0 = full history</text>
+<text x="324" y="284" class="t">gives Gitleaks every commit</text>
+<circle cx="512" cy="218" r="14" fill="#ffffff" stroke="#6366f1" stroke-width="2"/>
+<text x="512" y="223" text-anchor="middle" class="num" fill="#6366f1">1</text>
+<g filter="url(#shadow)"><rect class="box" x="570" y="200" width="220" height="130" rx="14" fill="#dc2626" style="animation-delay:0.75s"/></g>
+<text x="584" y="226" class="h">2 · GitLeaks</text>
+<text x="584" y="248" class="t">docker run gitleaks v8.21.2</text>
+<text x="584" y="266" class="t">dir . --redact</text>
+<text x="584" y="284" class="t">writes SARIF report</text>
+<circle cx="772" cy="218" r="14" fill="#ffffff" stroke="#dc2626" stroke-width="2"/>
+<text x="772" y="223" text-anchor="middle" class="num" fill="#dc2626">2</text>
+<g filter="url(#shadow)"><rect class="box" x="830" y="200" width="220" height="130" rx="14" fill="#f59e0b" style="animation-delay:1.00s"/></g>
+<text x="844" y="226" class="h">Secrets found?</text>
+<text x="844" y="248" class="t">gitleaks step outcome</text>
+<text x="844" y="266" class="t">yes → fail the job</text>
+<text x="844" y="284" class="t">no → keep going</text>
+<g filter="url(#shadow)"><rect class="box" x="830" y="400" width="220" height="130" rx="14" fill="#e11d48" style="animation-delay:1.25s"/></g>
+<text x="844" y="426" class="h">9 · Fail the job</text>
+<text x="844" y="448" class="t">exit 1 with ::error::</text>
+<text x="844" y="466" class="t">Gitleaks found secrets</text>
+<text x="844" y="484" class="t">fix the code, push again</text>
+<circle cx="1032" cy="418" r="14" fill="#ffffff" stroke="#e11d48" stroke-width="2"/>
+<text x="1032" y="423" text-anchor="middle" class="num" fill="#e11d48">9</text>
+<g filter="url(#shadow)"><rect class="box" x="570" y="400" width="220" height="130" rx="14" fill="#16a34a" style="animation-delay:0.00s"/></g>
+<text x="584" y="426" class="h">3 · Build + tests</text>
+<text x="584" y="448" class="t">next step if clean</text>
+<text x="584" y="466" class="t">Setup Java 21 and Maven</text>
+<circle cx="772" cy="418" r="14" fill="#ffffff" stroke="#16a34a" stroke-width="2"/>
+<text x="772" y="423" text-anchor="middle" class="num" fill="#16a34a">3</text>
+<g filter="url(#shadow)"><rect class="box" x="310" y="400" width="220" height="130" rx="14" fill="#8b5cf6" style="animation-delay:0.25s"/></g>
+<text x="324" y="426" class="h">SARIF report</text>
+<text x="324" y="448" class="t">reports/gitleaks.sarif</text>
+<text x="324" y="466" class="t">sent to SonarCloud</text>
+<text x="324" y="484" class="t">in step 7</text>
+<path id="p0" class="arrow" d="M270.0,265.0 L310.0,265.0" stroke="#64748b" marker-end="url(#head)"/>
+<path id="p1" class="arrow" d="M530.0,265.0 L570.0,265.0" stroke="#64748b" marker-end="url(#head)"/>
+<path id="p2" class="arrow" d="M790.0,265.0 L830.0,265.0" stroke="#64748b" marker-end="url(#head)"/>
+<path id="p3" class="arrow" d="M940.0,330.0 L940.0,400.0" stroke="#e11d48" marker-end="url(#head)"/>
+<text x="870.0" y="355.0" text-anchor="middle" class="lbl">yes</text>
+<path id="p4" class="arrow" d="M680.0,330.0 L680.0,400.0" stroke="#16a34a" marker-end="url(#head)"/>
+<text x="640.0" y="355.0" text-anchor="middle" class="lbl">no</text>
+<path id="p5" class="arrow" d="M640.0,330.0 L420.0,400.0" stroke="#7c3aed" marker-end="url(#head)"/>
+<text x="520.0" y="360.0" text-anchor="middle" class="lbl">report</text>
+  <text x="550.0" y="596" text-anchor="middle" class="foot">GitLeaks scans the files in the repo, redacts what it finds and writes reports/gitleaks.sarif</text><text x="550.0" y="616" text-anchor="middle" class="foot">If it finds anything, step 9 fails the job. The SARIF file still reaches SonarCloud (step 7).</text><text x="550.0" y="636" text-anchor="middle" class="foot">Clean run → continue to step 3 (build and tests).</text>
+  <circle r="5.5" fill="#64748b" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.0s"><mpath href="#p0"/></animateMotion></circle>
+<circle r="5.5" fill="#64748b" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.5s"><mpath href="#p1"/></animateMotion></circle>
+<circle r="5.5" fill="#64748b" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="1.0s"><mpath href="#p2"/></animateMotion></circle>
+<circle r="5.5" fill="#e11d48" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="1.5s"><mpath href="#p3"/></animateMotion></circle>
+<circle r="5.5" fill="#16a34a" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="2.0s"><mpath href="#p4"/></animateMotion></circle>
+<circle r="5.5" fill="#7c3aed" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.0s"><mpath href="#p5"/></animateMotion></circle>
+</svg>

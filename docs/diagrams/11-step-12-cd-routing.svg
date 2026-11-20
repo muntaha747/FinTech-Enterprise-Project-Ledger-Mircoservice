@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 720" width="1100" height="720" role="img" aria-label="11 · Step 12: Tag and Event Routing to Environments">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f0f9ff"/><stop offset="1" stop-color="#fdf4ff"/></linearGradient>
+    <style>
+      .title { font: 700 26px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .sub { font: 400 14px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+      .h { font: 700 15px 'Segoe UI', Arial, sans-serif; fill: #ffffff; }
+      .t { font: 400 12.5px 'Segoe UI', Arial, sans-serif; fill: #f8fafc; }
+      .num { font: 700 13px 'Segoe UI', Arial, sans-serif; }
+      .lbl { font: 600 12px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .note { font: 600 13px 'Segoe UI', Arial, sans-serif; }
+      .foot { font: 400 13px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+      .arrow { fill: none; stroke-width: 2.5; stroke-dasharray: 7 6; animation: flow 1s linear infinite; }
+      .box { stroke: #ffffff; stroke-width: 2; animation: breathe 3s ease-in-out infinite; }
+      @keyframes flow { to { stroke-dashoffset: -26; } }
+      @keyframes breathe { 0%,100% { stroke-opacity: .35; } 50% { stroke-opacity: 1; } }
+      @media (prefers-reduced-motion: reduce) { .arrow, .box { animation: none; } }
+    </style>
+    <marker id="head" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#0f172a" flood-opacity=".22"/>
+    </filter>
+  </defs>
+  <rect width="1100" height="720" fill="url(#bg)"/>
+  <text x="550.0" y="38" text-anchor="middle" class="title">11 · Step 12: Tag and Event Routing to Environments</text>
+  <text x="550.0" y="62" text-anchor="middle" class="sub">After a successful build, the deployment job decides which environments to deploy</text>
+  <g filter="url(#shadow)"><rect class="box" x="40" y="260" width="220" height="130" rx="14" fill="#16a34a" style="animation-delay:0.25s"/></g>
+<text x="54" y="286" class="h">Build succeeded</text>
+<text x="54" y="308" class="t">needs: build</text>
+<text x="54" y="326" class="t">deployment job starts</text>
+<text x="54" y="344" class="t">only on success</text>
+<g filter="url(#shadow)"><rect class="box" x="290" y="260" width="220" height="130" rx="14" fill="#8b5cf6" style="animation-delay:0.50s"/></g>
+<text x="304" y="286" class="h">Which event?</text>
+<text x="304" y="308" class="t">dispatch → chosen env</text>
+<text x="304" y="326" class="t">PR closed + merged → rel</text>
+<text x="304" y="344" class="t">else → functional</text>
+<g filter="url(#shadow)"><rect class="box" x="540" y="110" width="220" height="100" rx="14" fill="#14b8a6" style="animation-delay:0.75s"/></g>
+<text x="554" y="136" class="h">Manual run</text>
+<text x="554" y="158" class="t">chosen environment(s)</text>
+<text x="554" y="176" class="t">regression-and-integration</text>
+<g filter="url(#shadow)"><rect class="box" x="540" y="260" width="220" height="100" rx="14" fill="#ec4899" style="animation-delay:1.00s"/></g>
+<text x="554" y="286" class="h">PR merged (rel-)</text>
+<text x="554" y="308" class="t">regression + integration</text>
+<g filter="url(#shadow)"><rect class="box" x="540" y="410" width="220" height="100" rx="14" fill="#f59e0b" style="animation-delay:1.25s"/></g>
+<text x="554" y="436" class="h">Push or PR open (fb-)</text>
+<text x="554" y="458" class="t">functional</text>
+<g filter="url(#shadow)"><rect class="box" x="800" y="260" width="240" height="130" rx="14" fill="#2563eb" style="animation-delay:0.00s"/></g>
+<text x="814" y="286" class="h">12 · Dispatch CD</text>
+<text x="814" y="308" class="t">GitHub API + GH_PAT</text>
+<text x="814" y="326" class="t">one run per environment</text>
+<text x="814" y="344" class="t">sleep 60 between</text>
+<circle cx="1022" cy="278" r="14" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+<text x="1022" y="283" text-anchor="middle" class="num" fill="#2563eb">12</text>
+<g filter="url(#shadow)"><rect class="box" x="40" y="540" width="1020" height="80" rx="14" fill="#475569" style="animation-delay:0.25s"/></g>
+<text x="54" y="566" class="h">Tags</text>
+<text x="54" y="588" class="t">fb-&lt;run&gt;-&lt;sha8&gt; = feature builds · rel-&lt;run&gt;-&lt;sha8&gt; = builds from main · shown in run summary</text>
+<path id="p0" class="arrow" d="M260.0,325.0 L290.0,325.0" stroke="#334155" marker-end="url(#head)"/>
+<path id="p1" class="arrow" d="M510.0,325.0 L540.0,160.0" stroke="#14b8a6" marker-end="url(#head)"/>
+<path id="p2" class="arrow" d="M510.0,325.0 L540.0,310.0" stroke="#ec4899" marker-end="url(#head)"/>
+<path id="p3" class="arrow" d="M510.0,325.0 L540.0,460.0" stroke="#f59e0b" marker-end="url(#head)"/>
+<path id="p4" class="arrow" d="M760.0,160.0 L800.0,325.0" stroke="#14b8a6" marker-end="url(#head)"/>
+<path id="p5" class="arrow" d="M760.0,310.0 L800.0,325.0" stroke="#ec4899" marker-end="url(#head)"/>
+<path id="p6" class="arrow" d="M760.0,460.0 L800.0,325.0" stroke="#f59e0b" marker-end="url(#head)"/>
+  <text x="550.0" y="676" text-anchor="middle" class="foot">Routing reads the event, not the tag. The fb- and rel- tags are informational in this version.</text><text x="550.0" y="696" text-anchor="middle" class="foot">Each environment gets its own deploy.yml run in the deployment repo, with a 60 second pause between them.</text><text x="550.0" y="716" text-anchor="middle" class="foot">Feature push → functional. Merged PR → regression + integration. Manual run → the environment you choose.</text>
+  <circle r="5.5" fill="#334155" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.0s"><mpath href="#p0"/></animateMotion></circle>
+<circle r="5.5" fill="#14b8a6" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.5s"><mpath href="#p1"/></animateMotion></circle>
+<circle r="5.5" fill="#ec4899" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="1.0s"><mpath href="#p2"/></animateMotion></circle>
+<circle r="5.5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="1.5s"><mpath href="#p3"/></animateMotion></circle>
+<circle r="5.5" fill="#14b8a6" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="2.0s"><mpath href="#p4"/></animateMotion></circle>
+<circle r="5.5" fill="#ec4899" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.0s"><mpath href="#p5"/></animateMotion></circle>
+<circle r="5.5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5"><animateMotion dur="2.6s" repeatCount="indefinite" begin="0.5s"><mpath href="#p6"/></animateMotion></circle>
+</svg>
