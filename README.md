@@ -1,4 +1,4 @@
-# FinTech Ledger · CI Build Pipeline (FinTech-Ledger-CI-MicroService)
+# FinTech Ledger · CI Build Pipeline (FinTech-Ledger-CI-MicroService-Project)
 
 > **Programming language: Java (Spring Boot).** This repo is a **Java Spring Boot Microservice**: the Ledger service, a REST API for books and ledger entries backed by MySQL.
 >
