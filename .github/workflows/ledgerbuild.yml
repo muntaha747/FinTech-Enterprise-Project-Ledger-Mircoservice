@@ -137,8 +137,6 @@ jobs:
           context: .
           push: true
           tags: ${{ steps.image.outputs.registry }}/${{ steps.image.outputs.repo }}:${{ steps.image.outputs.tag }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: ECR scan summary (non-blocking)
         continue-on-error: true
