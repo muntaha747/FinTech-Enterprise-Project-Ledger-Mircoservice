@@ -97,7 +97,10 @@ jobs:
       - name: Trivy filesystem scan (pom.xml dependencies)
         continue-on-error: true
         run: |
-          docker run --rm -v "${GITHUB_WORKSPACE}":/repo -w /repo aquasec/trivy:0.50.0 \
+          docker run --rm \
+            -v "$HOME/.cache/trivy":/root/.cache/ \
+            -v "${GITHUB_WORKSPACE}":/repo -w /repo \
+            aquasec/trivy:0.50.0 \
             fs . --format json --output reports/trivy-fs.json
 
       # ---------- SAST + quality gate ----------
@@ -109,6 +112,7 @@ jobs:
         run: |
           mvn -B sonar:sonar \
             -Dsonar.projectKey=muntaha747_fintech-ledger-ci-microservice \
+            -Dsonar.projectName=FinTech-Ledger-CI-MicroService \
             -Dsonar.organization=muntaha747 \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.token=${SONAR_TOKEN} \
@@ -164,21 +168,24 @@ jobs:
 
       # ---------- Image scan: full JSON report (never blocks) ----------
       - name: Trivy image scan - full report
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.ECR_REPO }}:${{ env.TAG }}
-          format: json
-          output: reports/trivy-image.json
-          exit-code: '0'
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v "$HOME/.cache/trivy":/root/.cache/ \
+            -v "${GITHUB_WORKSPACE}":/repo -w /repo \
+            aquasec/trivy:0.50.0 image \
+            --format json --output reports/trivy-image.json \
+            "$REGISTRY/$ECR_REPO:$TAG"
 
       # ---------- Image scan: gate (blocks on fixable CRITICAL) ----------
       - name: Trivy image scan - gate (fixable CRITICAL)
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.ECR_REPO }}:${{ env.TAG }}
-          severity: CRITICAL
-          ignore-unfixed: true
-          exit-code: '1'
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v "$HOME/.cache/trivy":/root/.cache/ \
+            aquasec/trivy:0.50.0 image \
+            --severity CRITICAL --ignore-unfixed --exit-code 1 \
+            "$REGISTRY/$ECR_REPO:$TAG"
 
       # ---------- Push to ECR ----------
       - name: Configure AWS credentials
