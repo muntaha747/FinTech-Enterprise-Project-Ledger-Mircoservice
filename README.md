@@ -2,7 +2,7 @@
 
 > **Programming language: Java (Spring Boot).** This repo is a **Java Spring Boot Microservice**: the Ledger service, a REST API for books and ledger entries backed by MySQL.
 >
-> This repo is the **CI side** (build, test, security scan, image push). Deployment is handled by the companion repo [`FinTech-Ledger-Deployment-MicroService-Project`](https://github.com/muntaha747/FinTech-Ledger-Deployment-MicroService-Project) through **Argo CD** (GitOps).
+> This repo is the **CI side** (build, test, security scan, image push). Deployment is handled by the companion repo [`FinTech-Ledger-CD-Microservice-Project`](https://github.com/muntaha747/FinTech-Ledger-CD-Microservice-Project) through **Argo CD** (GitOps).
 
 ---
 

@@ -40,7 +40,7 @@ on:
           - regression-and-integration
 
 env:
-  CD_REPO: muntaha747/FinTech-Ledger-Deployment-MicroService-Project
+  CD_REPO: muntaha747/FinTech-Ledger-CD-Microservice-Project
   REGISTRY: ${{ inputs.ECR_URL || '747240980649.dkr.ecr.us-east-1.amazonaws.com' }}
   ECR_REPO: ${{ inputs.APPLICATION_IMAGE_REPO || 'fintech-ledgerservice' }}
   AWS_REGION: ${{ inputs.AWS_REGION || 'us-east-1' }}
